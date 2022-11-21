@@ -1,0 +1,13 @@
+{
+    "name": "com.vat.shared",
+    "displayName": "VAT Shared Scripts",
+    "version": "1.0.0",
+    "unity": "2021.3",
+    "description": "Provides useful helper extensions, scripts, and data structures for unity.",
+	"dependencies": {
+        "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
+		"com.unity.addressables": "1.19.19",
+		"com.unity.burst": "1.6.6",
+    }
+    "category": "Virtual Afterthoughts"
+}
