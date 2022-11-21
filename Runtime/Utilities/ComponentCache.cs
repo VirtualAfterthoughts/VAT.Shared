@@ -8,13 +8,13 @@ namespace VAT.Shared.Utilities {
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class ComponentCache<T> where T : Object {
-        // The internal dictionary of the cache.
-        private readonly Dictionary<GameObject, T> cache = new(new UnityComparer());
+        // The internal cache.
+        private readonly Dictionary<GameObject, List<T>> _cache = new(new UnityComparer());
 
         /// <summary>
         /// Clears all cached components.
         /// </summary>
-        public void Clear() => cache.Clear();
+        public void Clear() => _cache.Clear();
 
         /// <summary>
         /// Returns the object from the given GameObject.
@@ -22,8 +22,10 @@ namespace VAT.Shared.Utilities {
         /// <param name="go"></param>
         /// <returns></returns>
         public T Get(GameObject go) {
-            if (cache.ContainsKey(go)) return cache[go];
-            return null;
+            if (_cache.ContainsKey(go)) 
+                return _cache[go][0];
+            else
+                return null;
         }
 
         /// <summary>
@@ -33,8 +35,14 @@ namespace VAT.Shared.Utilities {
         /// <param name="comp"></param>
         /// <returns></returns>
         public bool TryGet(GameObject go, out T comp) {
-            comp = Get(go);
-            return comp != null;
+            if (_cache.ContainsKey(go)) {
+                comp = _cache[go][0];
+                return true;
+            }
+            else {
+                comp = default;
+                return false;
+            }
         }
 
         /// <summary>
@@ -43,28 +51,29 @@ namespace VAT.Shared.Utilities {
         /// <param name="go"></param>
         /// <param name="comp"></param>
         public void Add(GameObject go, T comp) {
-            if (cache.ContainsKey(go)) cache.Remove(go);
-            cache.Add(go, comp);
-        }
-
-        /// <summary>
-        /// Tries to get the component on the GameObject. If not found, adds an existing component to the cache.
-        /// </summary>
-        /// <param name="go"></param>
-        /// <returns></returns>
-        public T AddOrGet(GameObject go) {
-            T get = Get(go);
-            if (get) return get;
-            if (go.TryGetComponent(out T comp))
-                Add(go, comp);
-            return comp;
+            if (_cache.ContainsKey(go) && !_cache[go].Contains(comp)) {
+                _cache[go].Add(comp);
+            }
+            else {
+                _cache.Add(go, new List<T>(1) { comp });
+            }
         }
 
         /// <summary>
         /// Removes the GameObject from the cache.
         /// </summary>
         /// <param name="go"></param>
-        public void Remove(GameObject go) => cache.Remove(go);
+        public void Remove(GameObject go) => _cache.Remove(go);
+
+        /// <summary>
+        /// Removes the component from the cache.
+        /// </summary>
+        /// <param name="go"></param>
+        /// <param name="comp"></param>
+        public void Remove(GameObject go, T comp) {
+            if (_cache.ContainsKey(go))
+                _cache[go].Remove(comp);
+        }
     }
 
 }

@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace VAT.Shared.Math
-{
-    public static class Bezier
-    {
+namespace VAT.Shared.Math {
+    /// <summary>
+    /// Helper class for calculating bezier functions.
+    /// </summary>
+    public static class Bezier {
         public static float CalculateCubicBezier1D(float t, float p0, float t0, float p1, float t1)
         {
             float b0 = Mathf.Pow(1 - t, 3) * p0;
@@ -16,8 +15,7 @@ namespace VAT.Shared.Math
             return b0 + b1 + b2 + b3;
         }
 
-        public static Vector3 CalculateCubicBezier3D(float t, Vector3 p0, Vector3 t0, Vector3 p1, Vector3 t1)
-        {
+        public static Vector3 CalculateCubicBezier3D(float t, Vector3 p0, Vector3 t0, Vector3 p1, Vector3 t1) {
             t = Mathf.Clamp01(t);
 
             float x = CalculateCubicBezier1D(t, p0.x, t0.x, p1.x, t1.x);

@@ -2,18 +2,16 @@ using System;
 using System.Collections.Generic;
 
 using UnityEngine;
-
 using static Unity.Mathematics.math;
 
 using VAT.Shared.Extensions;
 
-namespace VAT.Shared.Math
-{
-    using Unity.Mathematics;
-
+namespace VAT.Shared.Math {
+    /// <summary>
+    /// Enum representing every possible face for a cube.
+    /// </summary>
     [Flags]
-    public enum Faces
-    {
+    public enum Faces {
         EVERYTHING = -1,
         NONE = 0,
         PositiveX = 1 << 0,
@@ -24,6 +22,9 @@ namespace VAT.Shared.Math
         NegativeZ = 1 << 5,
     }
 
+    /// <summary>
+    /// Enum representing every possible edge for a cube.
+    /// </summary>
     [Flags]
     public enum Edges
     {
@@ -48,6 +49,9 @@ namespace VAT.Shared.Math
         NegativeYNegativeZ = 1 << 11,
     }
 
+    /// <summary>
+    /// Enum representing every possible corner for a cube.
+    /// </summary>
     [Flags]
     public enum Corners
     {
@@ -66,11 +70,22 @@ namespace VAT.Shared.Math
         NegativeXNegativeYNegativeZ = 1 << 7,
     }
 
-    public interface BoxVertex {
+    /// <summary>
+    /// Base interface for a box vertex.
+    /// </summary>
+    internal interface IBoxVertex {
+        /// <summary>
+        /// Calculates the closest point residing on the surface of the box.
+        /// </summary>
+        /// <param name="point">The point we are comparing.</param>
+        /// <returns>The closest point on the box.</returns>
         Vector3 ClosestPoint(Vector3 point);
     }
 
-    public struct FaceInfo : BoxVertex {
+    /// <summary>
+    /// Structure containing all necessary information about a cube face in local space.
+    /// </summary>
+    public struct FaceInfo : IBoxVertex {
         public Faces face;
         public Vector3 origin;
         public Vector3 normal;
@@ -100,7 +115,10 @@ namespace VAT.Shared.Math
         }
     }
 
-    public struct EdgeInfo : BoxVertex {
+    /// <summary>
+    /// Structure containing all necessary information about a cube edge in local space.
+    /// </summary>
+    public struct EdgeInfo : IBoxVertex {
         public Edges edge;
         public LineData line;
         public Vector3 normal;
@@ -114,7 +132,10 @@ namespace VAT.Shared.Math
         public Vector3 ClosestPoint(Vector3 point) => line.ClosestPointOnLine(point);
     }
 
-    public struct CornerInfo : BoxVertex {
+    /// <summary>
+    /// Structure containing all necessary information about a cube corner in local space.
+    /// </summary>
+    public struct CornerInfo : IBoxVertex {
         public Corners corner;
         public Vector3 origin;
         public Vector3 normal;
@@ -128,29 +149,27 @@ namespace VAT.Shared.Math
         public Vector3 ClosestPoint(Vector3 point) => origin;
     }
 
-    public static partial class Geometry
-    {
-        private static List<FaceInfo> _faceInfoBuffer = new List<FaceInfo>();
-        private static List<CornerInfo> _cornerInfoBuffer = new List<CornerInfo>();
-        private static List<EdgeInfo> _edgeInfoBuffer = new List<EdgeInfo>();
+    public static partial class Geometry {
+        private static readonly List<FaceInfo> _faceInfoBuffer = new();
+        private static readonly List<CornerInfo> _cornerInfoBuffer = new();
+        private static readonly List<EdgeInfo> _edgeInfoBuffer = new();
 
         /// <summary>
-        /// Returns a point in local space conformed to the bounds of a box.
+        /// Calculates a point in local space within the bounds of the box given a direction.
         /// </summary>
-        /// <param name="center"></param>
-        /// <param name="size"></param>
-        /// <param name="normal"></param>
-        /// <returns></returns>
-        public static Vector3 GetConformedPoint(Vector3 center, Vector3 size, Vector3 normal)
-        {
+        /// <param name="center">The center of the box in local space.</param>
+        /// <param name="size">The size of the box in local space. (extents * 2).</param>
+        /// <param name="normal">The direction pointing towards the point in local space.</param>
+        /// <returns>The point inside the box in local space.</returns>
+        public static Vector3 GetConformedPoint(Vector3 center, Vector3 size, Vector3 normal) {
             return center + Vector3.Scale(normal, size * 0.5f);
         }
 
         /// <summary>
-        /// Returns the normal of a face in local space.
+        /// Calculates the outward pointing normal of a box face in local space.
         /// </summary>
         /// <param name="face">The desired face.</param>
-        /// <returns></returns>
+        /// <returns>The normal.</returns>
         public static Vector3 GetFaceNormal(Faces face)
         {
             return face switch
@@ -166,25 +185,24 @@ namespace VAT.Shared.Math
         }
 
         /// <summary>
-        /// Returns the center of a face in local space.
+        /// Calculates the center of a box face in local space.
         /// </summary>
-        /// <param name="center"></param>
-        /// <param name="size"></param>
-        /// <param name="face"></param>
-        /// <returns></returns>
-        public static Vector3 GetFaceCenter(Vector3 center, Vector3 size, Faces face)
-        {
+        /// <param name="center">The local space center of the box.</param>
+        /// <param name="size">The local space size of the box (extents * 2).</param>
+        /// <param name="face">The desired face.</param>
+        /// <returns>The center of the face.</returns>
+        public static Vector3 GetFaceCenter(Vector3 center, Vector3 size, Faces face) {
             return GetConformedPoint(center, size, GetFaceNormal(face));
         }
 
         /// <summary>
-        /// Returns the closest point to another point on the face of a box. Calculated in local space.
+        /// Calculates the closest point on a box face.
         /// </summary>
-        /// /// <param name="point">The point you want to reference.</param>
+        /// /// <param name="point">The point in local space.</param>
         /// <param name="center">The center of the box in local space.</param>
         /// <param name="size">The size of the box in local space.</param>
         /// <param name="face">The desired face.</param>
-        /// <returns></returns>
+        /// <returns>The closest point on the face.</returns>
         public static Vector3 ClosestPointOnFace(Vector3 point, Vector3 center, Vector3 size, Faces face)
         {
             var normal = GetFaceNormal(face);
@@ -201,13 +219,13 @@ namespace VAT.Shared.Math
         }
 
         /// <summary>
-        /// Returns the face info for all flagged faces.
+        /// Retrieves the face info for all faces contained in the flag.
         /// </summary>
-        /// <param name="center"></param>
-        /// <param name="size"></param>
-        /// <param name="faces"></param>
-        /// <returns></returns>
-        public static List<FaceInfo> GetFaceInformation(Vector3 center, Vector3 size, Faces faces) {
+        /// <param name="center">The center of the box in local space.</param>
+        /// <param name="size">The size of the box in local space (extents * 2).</param>
+        /// <param name="faces">The flag containing all faces.</param>
+        /// <returns>The list containing all faces.</returns>
+        public static IReadOnlyList<FaceInfo> GetFaceInformation(Vector3 center, Vector3 size, Faces faces) {
             _faceInfoBuffer.Clear();
 
             for (var i = 0; i < 6; i++) {
@@ -221,13 +239,13 @@ namespace VAT.Shared.Math
         }
 
         /// <summary>
-        /// Returns the closest face to a point in local space.
+        /// Calculates the closest face to a point in local space.
         /// </summary>
-        /// <param name="point"></param>
-        /// <param name="center"></param>
-        /// <param name="size"></param>
-        /// <param name="faces"></param>
-        /// <returns></returns>
+        /// <param name="point">The point in local space.</param>
+        /// <param name="center">The center of the box in local space.</param>
+        /// <param name="size">The size of the box in local space (extents * 2).</param>
+        /// <param name="faces">The flag containing all faces.</param>
+        /// <returns>The closest found face. Returns null if none were found.</returns>
         public static FaceInfo? ClosestFace(Vector3 point, Vector3 center, Vector3 size, Faces faces) {
             float minDistance = float.PositiveInfinity;
             var faceInfos = GetFaceInformation(center, size, faces);
@@ -247,10 +265,10 @@ namespace VAT.Shared.Math
         }
 
         /// <summary>
-        /// Returns the normal of a corner in local space.
+        /// Calculates the outward pointing normal of a box corner in local space.
         /// </summary>
         /// <param name="corner">The desired corner.</param>
-        /// <returns></returns>
+        /// <returns>The normal.</returns>
         public static Vector3 GetCornerNormal(Corners corner)
         {
             return corner switch
@@ -268,25 +286,25 @@ namespace VAT.Shared.Math
         }
 
         /// <summary>
-        /// Returns the center of a corner in local space.
+        /// Calculates the center of a corner in local space.
         /// </summary>
-        /// <param name="center"></param>
-        /// <param name="size"></param>
-        /// <param name="corner"></param>
-        /// <returns></returns>
+        /// <param name="center">The center of the box in local space.</param>
+        /// <param name="size">The size of the box in local space (extents * 2).</param>
+        /// <param name="corner">The desired corner.</param>
+        /// <returns>The center of the corner.</returns>
         public static Vector3 GetCornerCenter(Vector3 center, Vector3 size, Corners corner)
         {
             return GetConformedPoint(center, size, GetCornerNormal(corner));
         }
 
         /// <summary>
-        /// Returns the corner info for all flagged corners.
+        /// Retrieves the face info for all faces contained in the flag.
         /// </summary>
-        /// <param name="center"></param>
-        /// <param name="size"></param>
-        /// <param name="corners"></param>
-        /// <returns></returns>
-        public static List<CornerInfo> GetCornerInformation(Vector3 center, Vector3 size, Corners corners) {
+        /// <param name="center">The center of the box in local space.</param>
+        /// <param name="size">The size of the box in local space (extents * 2).</param>
+        /// <param name="corners">The flag containing all corners.</param>
+        /// <returns>The list containing all corners.</returns>
+        public static IReadOnlyList<CornerInfo> GetCornerInformation(Vector3 center, Vector3 size, Corners corners) {
             _cornerInfoBuffer.Clear();
 
             for (var i = 0; i < 8; i++) {
@@ -300,13 +318,13 @@ namespace VAT.Shared.Math
         }
 
         /// <summary>
-        /// Returns the closest corner to a point in local space.
+        /// Calculates the closest corner to a point in local space.
         /// </summary>
-        /// <param name="point"></param>
-        /// <param name="center"></param>
-        /// <param name="size"></param>
-        /// <param name="corners"></param>
-        /// <returns></returns>
+        /// <param name="point">The point in local space.</param>
+        /// <param name="center">The center of the box in local space.</param>
+        /// <param name="size">The size of the box in local space (extents * 2).</param>
+        /// <param name="corners">The flag containing all corners.</param>
+        /// <returns>The closest found corner. Returns null if none were found.</returns>
         public static CornerInfo? ClosestCorner(Vector3 point, Vector3 center, Vector3 size, Corners corners)
         {
             float minDistance = float.PositiveInfinity;
@@ -327,10 +345,10 @@ namespace VAT.Shared.Math
         }
 
         /// <summary>
-        /// Returns the normal of an edge in local space.
+        /// Calculates the outward pointing normal of a box edge in local space.
         /// </summary>
         /// <param name="edge">The desired edge.</param>
-        /// <returns></returns>
+        /// <returns>The normal.</returns>
         public static Vector3 GetEdgeNormal(Edges edge)
         {
             return edge switch
@@ -352,10 +370,10 @@ namespace VAT.Shared.Math
         }
 
         /// <summary>
-        /// Returns the direction of an edge in local space.
+        /// Calculates the direction the edge's line follows in local space.
         /// </summary>
-        /// <param name="edge"></param>
-        /// <returns></returns>
+        /// <param name="edge">The desired edge.</param>
+        /// <returns>The direction the edge points.</returns>
         public static Vector3 GetEdgeDirection(Edges edge)
         {
             var normal = GetEdgeNormal(edge);
@@ -363,26 +381,24 @@ namespace VAT.Shared.Math
         }
 
         /// <summary>
-        /// Returns the center of an edge in local space.
+        /// Calculates the center of the box edge in local space.
         /// </summary>
-        /// <param name="center"></param>
-        /// <param name="size"></param>
-        /// <param name="edge"></param>
-        /// <returns></returns>
-        public static Vector3 GetEdgeCenter(Vector3 center, Vector3 size, Edges edge)
-        {
+        /// <param name="center">The center of the box in local space.</param>
+        /// <param name="size">The size of the box in local space (extents * 2).</param>
+        /// <param name="edge">The desired edge.</param>
+        /// <returns>The center of the edge.</returns>
+        public static Vector3 GetEdgeCenter(Vector3 center, Vector3 size, Edges edge) {
             return GetConformedPoint(center, size, GetEdgeNormal(edge));
         }
 
         /// <summary>
-        /// Returns the line info of an edge in local space.
+        /// Calculates the line data that an edge follows along in local space.
         /// </summary>
-        /// <param name="center"></param>
-        /// <param name="size"></param>
-        /// <param name="edge"></param>
-        /// <returns></returns>
-        public static LineData GetEdgeLine(Vector3 center, Vector3 size, Edges edge)
-        {
+        /// <param name="center">The center of the box in local space.</param>
+        /// <param name="size">The size of the box in local space.</param>
+        /// <param name="edge">The desired edge.</param>
+        /// <returns>The line data of the edge.</returns>
+        public static LineData GetEdgeLine(Vector3 center, Vector3 size, Edges edge) {
             var lineCenter = GetEdgeCenter(center, size, edge);
             var lineDirection = Vector3.Scale(GetEdgeDirection(edge), size * 0.5f);
 
@@ -390,13 +406,13 @@ namespace VAT.Shared.Math
         }
 
         /// <summary>
-        /// Returns the edge info for all flagged edges.
+        /// Retrieves the edge info for all edges contained in the flag.
         /// </summary>
-        /// <param name="center"></param>
-        /// <param name="size"></param>
-        /// <param name="edges"></param>
-        /// <returns></returns>
-        public static List<EdgeInfo> GetEdgeInformation(Vector3 center, Vector3 size, Edges edges) {
+        /// <param name="center">The center of the box in local space.</param>
+        /// <param name="size">The size of the box in local space (extents * 2).</param>
+        /// <param name="edges">The flag containing all edges.</param>
+        /// <returns>The list containing all edges.</returns>
+        public static IReadOnlyList<EdgeInfo> GetEdgeInformation(Vector3 center, Vector3 size, Edges edges) {
             _edgeInfoBuffer.Clear();
 
             for (var i = 0; i < 12; i++) {
@@ -410,13 +426,13 @@ namespace VAT.Shared.Math
         }
 
         /// <summary>
-        /// Returns the closest edge to a point in local space.
+        /// Calculates the closest edge to a point in local space.
         /// </summary>
-        /// <param name="point"></param>
-        /// <param name="center"></param>
-        /// <param name="size"></param>
-        /// <param name="edges"></param>
-        /// <returns></returns>
+        /// <param name="point">The point in local space.</param>
+        /// <param name="center">The center of the box in local space.</param>
+        /// <param name="size">The size of the box in local space (extents * 2).</param>
+        /// <param name="edges">The flag containing all edges.</param>
+        /// <returns>Returns the found edge. Returns null if none were found.</returns>
         public static EdgeInfo? ClosestEdge(Vector3 point, Vector3 center, Vector3 size, Edges edges) {
             float minDistance = float.PositiveInfinity;
             var edgeInfos = GetEdgeInformation(center, size, edges);

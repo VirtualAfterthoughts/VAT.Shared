@@ -12,6 +12,7 @@
 		"vat",
 		"virtualafterthoughts"
 	],
+	"license": "MIT",
 	"author": {
 		"name": "VirtualAfterThoughts"
 	},

@@ -7,6 +7,9 @@ using UnityEngine;
 using VAT.Shared.Extensions;
 
 namespace VAT.Shared.Data {
+    /// <summary>
+    /// A data structure containing a snapshot of a transform.
+    /// </summary>
     [Serializable]
     public struct SimpleTransform {
         /// <summary>

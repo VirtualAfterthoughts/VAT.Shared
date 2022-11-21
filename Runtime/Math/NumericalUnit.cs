@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -38,7 +39,7 @@ namespace VAT.Shared.Math
         public BaseUnit(float u) => _value = u;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class LengthUnit : BaseUnit
     {
         public LengthUnit(float u) : base(u) { }
@@ -82,10 +83,10 @@ namespace VAT.Shared.Math
         // When working with Unity operations, we should only use meters
         // When you want feet you need to explicitly request them!
         public static implicit operator float(LengthUnit u) => u.Meters;
-        public static implicit operator LengthUnit(float u) => new LengthUnit(u);
+        public static implicit operator LengthUnit(float u) => new(u);
     }
 
-    [System.Serializable]
+    [Serializable]
     public class VolumeUnit : BaseUnit
     {
         public VolumeUnit(float u) : base(u) { }
@@ -119,7 +120,7 @@ namespace VAT.Shared.Math
         public static implicit operator VolumeUnit(float u) => new VolumeUnit(u);
     }
 
-    [System.Serializable]
+    [Serializable]
     public class TemperatureUnit : BaseUnit
     {
         public TemperatureUnit(float u) : base(u) { }
@@ -162,6 +163,6 @@ namespace VAT.Shared.Math
 
         // Unity is metric!!!
         public static implicit operator float(TemperatureUnit u) => u.Celsius;
-        public static implicit operator TemperatureUnit(float u) => new TemperatureUnit(u);
+        public static implicit operator TemperatureUnit(float u) => new(u);
     }
 }

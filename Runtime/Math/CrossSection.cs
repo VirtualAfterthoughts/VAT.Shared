@@ -7,7 +7,7 @@ using VAT.Shared.Extensions;
 namespace VAT.Shared.Math {
     public static class CrossSection
     {
-        public static Dictionary<GameObject, Dictionary<Transform, Vector3[]>> verticesDict = new Dictionary<GameObject, Dictionary<Transform, Vector3[]>>();
+        public static Dictionary<GameObject, Dictionary<Transform, Vector3[]>> verticesDict = new();
 
         public static float CrossSectionArea(GameObject go, Vector3 normal)
         {
