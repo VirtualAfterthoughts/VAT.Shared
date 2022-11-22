@@ -8,7 +8,9 @@ using Object = UnityEngine.Object;
 
 using static Unity.Mathematics.math;
 
+#if USE_UNITASK
 using Cysharp.Threading.Tasks;
+#endif
 
 namespace VAT.Shared.Extensions {
     using Unity.Burst;
@@ -20,6 +22,7 @@ namespace VAT.Shared.Extensions {
     public static partial class TransformExtensions {
         /// <summary>
         /// Ensures the parent is set even when called in a method that does not allow parent setting.
+        /// Requires UniTask to function properly.
         /// </summary>
         /// <param name="transform"></param>
         /// <param name="parent"></param>
@@ -28,9 +31,13 @@ namespace VAT.Shared.Extensions {
                 return;
 
             transform.parent = parent;
+
+#if USE_UNITASK
             EnsureParentAsync(transform, parent, onFinish).Forget();
+#endif
         }
 
+#if USE_UNITASK
         private static async UniTaskVoid EnsureParentAsync(Transform transform, Transform parent, Action onFinish = null) {
             while (transform.parent != parent) {
                 transform.parent = parent;
@@ -40,6 +47,7 @@ namespace VAT.Shared.Extensions {
             if (onFinish != null)
                 onFinish?.Invoke();
         }
+#endif
 
         /// <summary>
         /// Transforms rotation from local space to world space.
