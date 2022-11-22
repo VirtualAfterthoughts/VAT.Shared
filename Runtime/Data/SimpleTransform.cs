@@ -28,6 +28,11 @@ namespace VAT.Shared.Data {
         public float3 lossyScale;
 
         /// <summary>
+        /// Matrix that transforms a point from local space into world space.
+        /// </summary>
+        public Matrix4x4 localToWorldMatrix;
+
+        /// <summary>
         /// Creates a snapshot of this transform.
         /// </summary>
         /// <param name="transform"></param>
@@ -37,6 +42,7 @@ namespace VAT.Shared.Data {
             simple.position = transform.position;
             simple.rotation = transform.rotation;
             simple.lossyScale = transform.lossyScale;
+            simple.localToWorldMatrix = Matrix4x4.TRS(simple.position, simple.rotation, simple.lossyScale);
             return simple;
         }
 
@@ -58,6 +64,8 @@ namespace VAT.Shared.Data {
             scale.z = 1f;
 
             simple.lossyScale = scale;
+
+            simple.localToWorldMatrix = Matrix4x4.TRS(simple.position, simple.rotation, simple.lossyScale);
             return simple;
         }
 
@@ -74,6 +82,7 @@ namespace VAT.Shared.Data {
             simple.position = position;
             simple.rotation = rotation;
             simple.lossyScale = lossyScale;
+            simple.localToWorldMatrix = Matrix4x4.TRS(simple.position, simple.rotation, simple.lossyScale);
             return simple;
         }
 
@@ -156,5 +165,7 @@ namespace VAT.Shared.Data {
             BurstCompiled_Transform.BurstCompiled_InverseTransformRotation(rotation, this.rotation, out var result);
             return result;
         }
+
+        public static implicit operator SimpleTransform(Transform transform) => SimpleTransform.Create(transform);
     }
 }

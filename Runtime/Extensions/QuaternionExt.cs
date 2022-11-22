@@ -6,6 +6,9 @@ using static Unity.Mathematics.math;
 namespace VAT.Shared.Extensions {
 	using Unity.Mathematics;
 
+	/// <summary>
+	/// Extension methods for Quaternions.
+	/// </summary>
     public static partial class QuaternionExtensions {
 		/// <summary>
 		/// Returns a version of this displacement quat that is ensured to be the shortest distance.

@@ -1,8 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-
-using static Unity.Mathematics.math;
-
 using UnityEngine;
 
 using VAT.Shared.Extensions;
@@ -11,18 +6,63 @@ namespace VAT.Shared.Data
 {
     using Unity.Mathematics;
 
+    /// <summary>
+    /// A snapshot state of a transform, allowing for the parent and positions to be reset at any time.
+    /// </summary>
     public class TransformState {
+        /// <summary>
+        /// The world space position of this state.
+        /// </summary>
         public readonly float3 position;
+        
+        /// <summary>
+        /// The world space rotation of this state.
+        /// </summary>
         public readonly quaternion rotation;
+
+        /// <summary>
+        /// The world space scale of this state.
+        /// </summary>
         public readonly float3 lossyScale;
 
+        /// <summary>
+        /// The local space position of this state.
+        /// </summary>
         public readonly float3 localPosition;
+
+        /// <summary>
+        /// The local space rotation of this state.
+        /// </summary>
         public readonly quaternion localRotation;
+
+        /// <summary>
+        /// The local space scale of this state.
+        /// </summary>
         public readonly float3 localScale;
 
+        /// <summary>
+        /// The transform this was made from.
+        /// </summary>
         public readonly Transform transform;
+
+        /// <summary>
+        /// The parent of the transform.
+        /// </summary>
         public readonly Transform parent;
 
+        /// <summary>
+        /// Does this state have an assigned transform?
+        /// </summary>
+        public readonly bool HasTransform;
+
+        /// <summary>
+        /// Does this state have an assigned parent?
+        /// </summary>
+        public readonly bool HasParent;
+
+        /// <summary>
+        /// Creates a transform state with default values.
+        /// </summary>
         public TransformState() {
             position = float3.zero;
             rotation = quaternion.identity;
@@ -34,8 +74,15 @@ namespace VAT.Shared.Data
 
             transform = null;
             parent = null;
+
+            HasTransform = false;
+            HasParent = false;
         }
 
+        /// <summary>
+        /// Creates a transform state from this transform.
+        /// </summary>
+        /// <param name="transform">The transform to snapshot.</param>
         public TransformState(Transform transform)
         {
             position = transform.position;
@@ -48,8 +95,16 @@ namespace VAT.Shared.Data
 
             this.transform = transform;
             parent = transform.parent;
+
+            HasTransform = true;
+            HasParent = parent != null;
         }
 
+        /// <summary>
+        /// Creates a transform state given a transform and a parent.
+        /// </summary>
+        /// <param name="transform">The transform to snapshot.</param>
+        /// <param name="parent">The transform's parent.</param>
         public TransformState(Transform transform, Transform parent)
         {
             position = transform.position;
@@ -62,8 +117,17 @@ namespace VAT.Shared.Data
 
             this.transform = transform;
             this.parent = parent;
+
+            HasTransform = true;
+            HasParent = parent != null;
         }
 
+        /// <summary>
+        /// Creates a transform state given positions and a parent.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="rotation">The rotation.</param>
+        /// <param name="parent">The parent of the state.</param>
         public TransformState(float3 position, quaternion rotation, Transform parent)
         {
             this.position = position;
@@ -76,8 +140,16 @@ namespace VAT.Shared.Data
 
             transform = null;
             this.parent = parent;
+
+            HasTransform = false;
+            HasParent = parent != null;
         }
 
+        /// <summary>
+        /// Creates a transform state given positions.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        /// <param name="rotation">The rotation.</param>
         public TransformState(float3 position, quaternion rotation)
         {
             this.position = position;
@@ -90,6 +162,9 @@ namespace VAT.Shared.Data
 
             transform = null;
             parent = null;
+
+            HasTransform = false;
+            HasParent = false;
         }
 
         /// <summary>
@@ -184,22 +259,24 @@ namespace VAT.Shared.Data
         /// Moves the transform to its cached positions and parent.
         /// </summary>
         public void MoveToState() {
-            if (transform != null)
-                transform.EnsureParent(parent, OnParented);
+            if (HasTransform)
+                transform.EnsureParent(parent, Internal_OnParented);
         }
 
         /// <summary>
         /// Moves the transform to its cached positions without setting the parent.
         /// </summary>
         public void MoveToPosition() {
-            var initialParent = transform.parent;
-            transform.EnsureParent(parent, () => {
-                OnParented();
-                transform.parent = initialParent;
-            });
+            if (HasTransform) {
+                var initialParent = transform.parent;
+                transform.EnsureParent(parent, () => {
+                    Internal_OnParented();
+                    transform.parent = initialParent;
+                });
+            }
         }
 
-        private void OnParented() {
+        private void Internal_OnParented() {
             transform.localPosition = localPosition;
             transform.localRotation = localRotation;
             transform.localScale = localScale;

@@ -1,7 +1,7 @@
 {
     "name": "com.virtualafterthoughts.shared",
 	"version": "1.0.0",
-    "displayName": "VAT Shared Scripts",
+    "displayName": "VAT Shared",
     "description": "Provides useful helper extensions, scripts, and data structures for unity.",
 	"unity": "2021.3",
 	"dependencies": {

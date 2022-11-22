@@ -3,7 +3,10 @@ using System.Collections;
 
 using UnityEngine;
 
-namespace VAT.Shared.Extensions {
+namespace VAT.Shared.Utilities {
+    /// <summary>
+    /// Simple enum for defining an axis.
+    /// </summary>
     public enum Axis {
         X = 0,
         Y = 1,

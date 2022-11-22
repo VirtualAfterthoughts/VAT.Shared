@@ -14,6 +14,9 @@ namespace VAT.Shared.Extensions {
     using Unity.Burst;
     using Unity.Mathematics;
 
+    /// <summary>
+    /// Extension methods for Transforms.
+    /// </summary>
     public static partial class TransformExtensions {
         /// <summary>
         /// Ensures the parent is set even when called in a method that does not allow parent setting.
