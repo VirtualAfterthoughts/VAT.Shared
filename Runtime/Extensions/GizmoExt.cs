@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
+
 using VAT.Shared.Data;
-using static UnityEngine.GraphicsBuffer;
 
 namespace VAT.Shared.Extensions {
     /// <summary>
