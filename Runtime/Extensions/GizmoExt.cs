@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Mathematics;
+using UnityEngine;
 
 using VAT.Shared.Data;
 
@@ -99,6 +100,7 @@ namespace VAT.Shared.Extensions {
 
                 position -= root.position;
                 rotation = Quaternion.Inverse(root.rotation) * rotation;
+                scale = (float3)scale / (float3)root.lossyScale;
 
                 Matrix4x4 meshMatrix = Matrix4x4.TRS(position, rotation, scale);
 
@@ -137,6 +139,7 @@ namespace VAT.Shared.Extensions {
 
                 position -= root.position;
                 rotation = Quaternion.Inverse(root.rotation) * rotation;
+                scale = (float3)scale / (float3)root.lossyScale;
 
                 Matrix4x4 meshMatrix = Matrix4x4.TRS(position, rotation, scale);
 
