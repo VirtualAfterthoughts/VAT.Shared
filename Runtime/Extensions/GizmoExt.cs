@@ -91,8 +91,19 @@ namespace VAT.Shared.Extensions {
                 if (!mesh.sharedMesh) 
                     continue;
 
+                // Get offset matrix
+                Transform root = mesh.transform.root;
+                Vector3 position = mesh.transform.position;
+                Quaternion rotation = mesh.transform.rotation;
+                Vector3 scale = mesh.transform.lossyScale;
+
+                position -= root.position;
+                rotation = Quaternion.Inverse(root.rotation) * rotation;
+
+                Matrix4x4 meshMatrix = Matrix4x4.TRS(position, rotation, scale);
+
                 // Draw the mesh
-                Gizmos.matrix = newMatrix * mesh.transform.localToWorldMatrix;
+                Gizmos.matrix = newMatrix * meshMatrix;
 
                 if (isWireframe)
                     Gizmos.DrawWireMesh(mesh.sharedMesh);
@@ -118,8 +129,19 @@ namespace VAT.Shared.Extensions {
                 if (!mesh.sharedMesh) 
                     continue;
 
+                // Get offset matrix
+                Transform root = mesh.transform.root;
+                Vector3 position = mesh.transform.position;
+                Quaternion rotation = mesh.transform.rotation;
+                Vector3 scale = mesh.transform.lossyScale;
+
+                position -= root.position;
+                rotation = Quaternion.Inverse(root.rotation) * rotation;
+
+                Matrix4x4 meshMatrix = Matrix4x4.TRS(position, rotation, scale);
+
                 // Draw the mesh
-                Gizmos.matrix = newMatrix * mesh.transform.localToWorldMatrix;
+                Gizmos.matrix = newMatrix * meshMatrix;
                 if (isWireframe)
                     Gizmos.DrawWireMesh(mesh.sharedMesh);
                 else
