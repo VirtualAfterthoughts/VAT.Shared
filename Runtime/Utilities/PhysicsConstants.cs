@@ -3,8 +3,8 @@ namespace VAT.Shared.Utilities
     public static class PhysicsConstants
     {
         /// <summary>
-        /// The speed of sound in m/s.
+        /// The speed of sound (343 m/s).
         /// </summary>
-        public const float SPEED_OF_SOUND = 343f;
+        public const float SpeedOfSound = 343f;
     }
 }

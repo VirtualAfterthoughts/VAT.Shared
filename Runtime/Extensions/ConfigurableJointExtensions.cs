@@ -8,6 +8,8 @@ namespace VAT.Shared.Extensions
 {
     using Unity.Mathematics;
 
+    using VAT.Shared.Math;
+
     public static class ConfigurableJointExtensions
     {
         public static Vector3 GetLimitedPosition(this ConfigurableJoint joint, Vector3 position)
@@ -49,7 +51,7 @@ namespace VAT.Shared.Extensions
         public static void SetTargetPositionAndVelocity(this ConfigurableJoint joint, Vector3 targetPosition)
         {
             // Getting the difference between the last target and the current is an easy way to set velocity without doing another conversion.
-            BurstDerivativeExtensions.GetLinearVelocity(joint.targetPosition, targetPosition, Time.deltaTime, out var result);
+            BurstDerivatives.GetLinearVelocity(joint.targetPosition, targetPosition, Time.deltaTime, out var result);
             joint.targetVelocity = result;
             joint.targetPosition = targetPosition;
         }
@@ -57,7 +59,7 @@ namespace VAT.Shared.Extensions
         public static void SetTargetRotationAndVelocity(this ConfigurableJoint joint, Quaternion targetRotation)
         {
             // Getting the difference between the last target and the current is an easy way to set angular velocity without doing another conversion.
-            BurstDerivativeExtensions.GetAngularVelocity(joint.targetRotation, targetRotation, Time.deltaTime, out var result);
+            BurstDerivatives.GetAngularVelocity(joint.targetRotation, targetRotation, Time.deltaTime, out var result);
             joint.targetAngularVelocity = result;
             joint.targetRotation = targetRotation;
         }

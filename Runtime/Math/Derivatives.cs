@@ -4,11 +4,13 @@ using static Unity.Mathematics.math;
 
 using Unity.Burst;
 
-namespace VAT.Shared.Extensions
+using VAT.Shared.Extensions;
+
+namespace VAT.Shared.Math
 {
     using Unity.Mathematics;
 
-    public static class DerivativeExtensions
+    public static class Derivatives
     {
         public static float3 GetLinearDisplacement(float3 from, float3 to) => to - from;
 
@@ -52,7 +54,7 @@ namespace VAT.Shared.Extensions
     }
 
     [BurstCompile(FloatMode = FloatMode.Fast)]
-    public static partial class BurstDerivativeExtensions
+    public static partial class BurstDerivatives
     {
         [BurstCompile(FloatMode = FloatMode.Fast)]
         public static void GetLinearDisplacement(in float3 from, in float3 to, out float3 linearDisplacement)

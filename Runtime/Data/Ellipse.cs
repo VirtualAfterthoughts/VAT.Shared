@@ -40,14 +40,14 @@ namespace VAT.Shared.Data
 
             foreach (var point in bottom.GetLocalPoints(segments))
             {
-                verticies.Add(mul(bottomTransform.rotation, point) + bottomTransform.position);
+                verticies.Add(mul(bottomTransform.Rotation, point) + bottomTransform.Position);
             }
 
             int offset = verticies.Count;
 
             foreach (var point in top.GetLocalPoints(segments))
             {
-                verticies.Add(mul(topTransform.rotation, point) + topTransform.position);
+                verticies.Add(mul(topTransform.Rotation, point) + topTransform.Position);
             }
 
             int triangleIndex = 1;
@@ -64,7 +64,7 @@ namespace VAT.Shared.Data
 
             if (isBottomFilled)
             {
-                verticies.Add(bottomTransform.position);
+                verticies.Add(bottomTransform.Position);
 
                 int holeIndex = 1;
 
@@ -77,7 +77,7 @@ namespace VAT.Shared.Data
 
             if (isTopFilled)
             {
-                verticies.Add(topTransform.position);
+                verticies.Add(topTransform.Position);
 
                 int holeIndex = 1;
 

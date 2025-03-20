@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using UnityEngine;
 
@@ -11,29 +10,29 @@ namespace VAT.Shared.Data
     [Serializable]
     public struct MeshDescriptor
     {
-        public Vector3[] verticies;
+        public Vector3[] Vertices;
 
-        public MeshTriangle[] triangles;
+        public MeshTriangle[] Triangles;
 
-        public MeshDescriptor(Vector3[] verticies, MeshTriangle[] triangles)
+        public MeshDescriptor(Vector3[] vertices, MeshTriangle[] triangles)
         {
-            this.verticies = verticies;
-            this.triangles = triangles;
+            this.Vertices = vertices;
+            this.Triangles = triangles;
         }
 
-        public MeshDescriptor(IList<Vector3> verticies, IList<MeshTriangle> triangles)
+        public MeshDescriptor(List<Vector3> vertices, List<MeshTriangle> triangles)
         {
-            this.verticies = verticies.ToArray();
-            this.triangles = triangles.ToArray();
+            this.Vertices = vertices.ToArray();
+            this.Triangles = triangles.ToArray();
         }
 
         public static MeshDescriptor Combine(MeshDescriptor x, MeshDescriptor y)
         {
-            int xVerticies = x.verticies.Length;
-            int yVerticies = y.verticies.Length;
+            int xVerticies = x.Vertices.Length;
+            int yVerticies = y.Vertices.Length;
 
-            int xTriangles = x.triangles.Length;
-            int yTriangles = y.triangles.Length;
+            int xTriangles = x.Triangles.Length;
+            int yTriangles = y.Triangles.Length;
 
             Vector3[] verticies = new Vector3[xVerticies + yVerticies];
             MeshTriangle[] triangles = new MeshTriangle[xTriangles + yTriangles];
@@ -41,23 +40,23 @@ namespace VAT.Shared.Data
             // Combine vertex arrays
             for (var i = 0; i < xVerticies; i++)
             {
-                verticies[i] = x.verticies[i];
+                verticies[i] = x.Vertices[i];
             }
 
             for (var i = 0; i < yVerticies; i++)
             {
-                verticies[i + xVerticies] = y.verticies[i];
+                verticies[i + xVerticies] = y.Vertices[i];
             }
 
             // Combine triangle arrays
             for (var i = 0; i < xTriangles; i++)
             {
-                triangles[i] = x.triangles[i];
+                triangles[i] = x.Triangles[i];
             }
 
             for (var i = 0; i < yTriangles; i++)
             {
-                var triangle = y.triangles[i];
+                var triangle = y.Triangles[i];
                 triangles[i + xTriangles] = MeshTriangle.Offset(triangle, xTriangles + 2);
             }
 
@@ -69,10 +68,10 @@ namespace VAT.Shared.Data
         {
             Mesh mesh = new()
             {
-                vertices = verticies
+                vertices = Vertices
             };
 
-            mesh.SetTriangles(triangles);
+            mesh.SetTriangles(Triangles);
             mesh.RecalculateNormals();
 
             return mesh;

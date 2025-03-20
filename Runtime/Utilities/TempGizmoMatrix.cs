@@ -2,7 +2,7 @@ using System;
 
 using UnityEngine;
 
-namespace VAT.Shared
+namespace VAT.Shared.Utilities
 {
     public class TempGizmoMatrix : IDisposable
     {

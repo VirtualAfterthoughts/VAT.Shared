@@ -2,7 +2,7 @@
 
 namespace VAT.Shared.Extensions
 {
-    public static partial class GameObjectExtensions
+    public static class GameObjectExtensions
     {
         public static bool TryGetComponentInParent<T>(this GameObject go, out T component) where T : Component
         {
