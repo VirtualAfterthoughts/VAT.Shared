@@ -29,6 +29,18 @@ namespace VAT.Shared.Data
         [Range(-180f, 180f)]
         public float AngularZLimit;
 
+        public JointAngularLimits(ConfigurableJoint joint)
+        {
+            AngularXMotion = joint.angularXMotion;
+            AngularYMotion = joint.angularYMotion;
+            AngularZMotion = joint.angularZMotion;
+
+            LowAngularXLimit = joint.lowAngularXLimit.limit;
+            HighAngularXLimit = joint.highAngularXLimit.limit;
+            AngularYLimit = joint.angularYLimit.limit;
+            AngularZLimit = joint.angularZLimit.limit;
+        }
+
         public JointAngularLimits(float lowAngularXLimit, float highAngularXLimit, float angularYLimit, float angularZLimit)
         {
             AngularXMotion = AngularYMotion = AngularZMotion = ConfigurableJointMotion.Limited;
@@ -39,7 +51,7 @@ namespace VAT.Shared.Data
             AngularZLimit = angularZLimit;
         }
 
-        public readonly void ApplyLimits(ConfigurableJoint joint)
+        public readonly void CopyTo(ConfigurableJoint joint)
         {
             joint.lowAngularXLimit = new SoftJointLimit() { limit = LowAngularXLimit };
             joint.highAngularXLimit = new SoftJointLimit() { limit = HighAngularXLimit };
