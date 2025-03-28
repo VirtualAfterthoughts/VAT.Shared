@@ -34,6 +34,16 @@ namespace VAT.Shared.Utilities
         /// Callback invoked any time the Value is set, even if the same value is provided.
         /// </summary>
         public event StateCallback OnValueChanged;
+
+        public State()
+        {
+            _value = default;
+        }
+
+        public State(T value) 
+        {
+            _value = value;
+        }
     }
 
     /// <summary>
@@ -54,10 +64,19 @@ namespace VAT.Shared.Utilities
             Value = false;
             Toggle();
         }
+
+        public BoolState() : base() { }
+
+        public BoolState(bool value) : base(value) { }
     }
 
     /// <summary>
     /// Holder for a float with a callback for when its changed.
     /// </summary>
-    public sealed class FloatState : State<float> { }
+    public sealed class FloatState : State<float> 
+    {
+        public FloatState() : base() { }
+
+        public FloatState(float value) : base(value) { }
+    }
 }
