@@ -57,7 +57,7 @@ namespace VAT.Shared.Utilities
         public void Toggle() => Value = !Value;
 
         /// <summary>
-        /// 
+        /// Sets the bool to True and then back to False once.
         /// </summary>
         public void Trigger()
         {
@@ -78,5 +78,15 @@ namespace VAT.Shared.Utilities
         public FloatState() : base() { }
 
         public FloatState(float value) : base(value) { }
+
+        /// <summary>
+        /// Sets the float to 1 and then back to 0 once.
+        /// </summary>
+        public void Trigger()
+        {
+            Value = 0f;
+            Value = 1f;
+            Value = 0f;
+        }
     }
 }
