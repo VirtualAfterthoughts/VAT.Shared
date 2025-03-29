@@ -142,7 +142,7 @@ namespace VAT.Shared.Data
                 var scaled = normalize(local.xz) * radius;
                 var final = new float3(scaled.x, local.y, scaled.y);
 
-                return transform.TransformVector(final - local);
+                return transform.TransformDirection(final - local);
             }
             else
                 return float3.zero;

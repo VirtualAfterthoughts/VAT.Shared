@@ -61,7 +61,7 @@ namespace VAT.Shared.Data
             {
                 var local = transform.InverseTransformPoint(point);
                 var final = normalize(local) * new float3(radius.x, height * 0.5f, radius.y);
-                return transform.TransformVector(final - local);
+                return transform.TransformDirection(final - local);
             }
             else
                 return float3.zero;

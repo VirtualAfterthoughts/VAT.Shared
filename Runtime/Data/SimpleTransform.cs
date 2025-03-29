@@ -11,7 +11,7 @@ namespace VAT.Shared.Data
     using Unity.Mathematics;
 
     /// <summary>
-    /// A simplified transformation matrix providing position, rotation, and scale.
+    /// A simplified transformation matrix providing position and rotation.
     /// </summary>
     [Serializable]
     public struct SimpleTransform
@@ -19,7 +19,7 @@ namespace VAT.Shared.Data
         /// <summary>
         /// A SimpleTransform with no transformations.
         /// </summary>
-        public static readonly SimpleTransform Identity = new(Vector3.zero, Quaternion.identity, Vector3.one);
+        public static readonly SimpleTransform Identity = new(Vector3.zero, Quaternion.identity);
 
         /// <summary>
         /// The position of the transform.
@@ -32,14 +32,9 @@ namespace VAT.Shared.Data
         public quaternion Rotation;
 
         /// <summary>
-        /// The scale of the transform.
-        /// </summary>
-        public float3 Scale;
-
-        /// <summary>
         /// Matrix that transforms from local space into world space.
         /// </summary>
-        public readonly Matrix4x4 LocalToWorldMatrix => Matrix4x4.TRS(Position, Rotation, Scale);
+        public readonly Matrix4x4 LocalToWorldMatrix => Matrix4x4.TRS(Position, Rotation, Vector3.one);
 
         /// <summary>
         /// The forward direction of the rotation.
@@ -59,17 +54,14 @@ namespace VAT.Shared.Data
         /// <summary>
         /// The inverse of this SimpleTransform.
         /// </summary>
-        public readonly SimpleTransform Inverse => new(-Position, inverse(Rotation), Scale);
+        public readonly SimpleTransform Inverse => new(-Position, inverse(Rotation));
 
-        public SimpleTransform(float3 position) : this(position, quaternion.identity, 1f) { }
+        public SimpleTransform(float3 position) : this(position, quaternion.identity) { }
 
-        public SimpleTransform(float3 position, quaternion rotation) : this(position, rotation, 1f) { }
-
-        public SimpleTransform(float3 position, quaternion rotation, float3 scale)
+        public SimpleTransform(float3 position, quaternion rotation)
         {
             Position = position;
             Rotation = normalize(rotation);
-            Scale = scale;
         }
 
         /// <summary>
@@ -79,7 +71,7 @@ namespace VAT.Shared.Data
         /// <returns></returns>
         public readonly SimpleTransform Transform(SimpleTransform transform)
         {
-            return new(TransformPoint(transform.Position), TransformRotation(transform.Rotation), transform.Scale * Scale);
+            return new(TransformPoint(transform.Position), TransformRotation(transform.Rotation));
         }
 
         /// <summary>
@@ -89,7 +81,7 @@ namespace VAT.Shared.Data
         /// <returns></returns>
         public readonly float3 TransformPoint(float3 position)
         {
-            BurstTransformExtensions.TransformPoint(position, this.Position, Rotation, Scale, out var result);
+            BurstTransformExtensions.TransformPoint(position, this.Position, Rotation, out var result);
             return result;
         }
 
@@ -105,24 +97,13 @@ namespace VAT.Shared.Data
         }
 
         /// <summary>
-        /// Transforms a vector from local space to world space.
-        /// </summary>
-        /// <param name="vector"></param>
-        /// <returns></returns>
-        public readonly float3 TransformVector(float3 vector)
-        {
-            BurstTransformExtensions.TransformVector(vector, Rotation, Scale, out var result);
-            return result;
-        }
-
-        /// <summary>
         /// Transforms a rotation from local space to world space.
         /// </summary>
         /// <param name="rotation"></param>
         /// <returns></returns>
         public readonly quaternion TransformRotation(quaternion rotation)
         {
-            BurstTransformExtensions.TransformRotation(rotation, this.Rotation, this.Scale, out var result);
+            BurstTransformExtensions.TransformRotation(rotation, this.Rotation, out var result);
             return result;
         }
 
@@ -133,7 +114,7 @@ namespace VAT.Shared.Data
         /// <returns></returns>
         public readonly SimpleTransform InverseTransform(SimpleTransform transform)
         {
-            return new(InverseTransformPoint(transform.Position), InverseTransformRotation(transform.Rotation), transform.Scale / Scale);
+            return new(InverseTransformPoint(transform.Position), InverseTransformRotation(transform.Rotation));
         }
 
         /// <summary>
@@ -143,7 +124,7 @@ namespace VAT.Shared.Data
         /// <returns></returns>
         public readonly float3 InverseTransformPoint(float3 position)
         {
-            BurstTransformExtensions.InverseTransformPoint(position, this.Position, Rotation, Scale, out var result);
+            BurstTransformExtensions.InverseTransformPoint(position, this.Position, Rotation, out var result);
             return result;
         }
 
@@ -159,24 +140,13 @@ namespace VAT.Shared.Data
         }
 
         /// <summary>
-        /// Transforms a vector from world space to local space.
-        /// </summary>
-        /// <param name="vector"></param>
-        /// <returns></returns>
-        public readonly float3 InverseTransformVector(float3 vector)
-        {
-            BurstTransformExtensions.InverseTransformVector(vector, Rotation, Scale, out var result);
-            return result;
-        }
-
-        /// <summary>
         /// Transforms a rotation from world space to local space.
         /// </summary>
         /// <param name="rotation"></param>
         /// <returns></returns>
         public readonly quaternion InverseTransformRotation(quaternion rotation)
         {
-            BurstTransformExtensions.InverseTransformRotation(rotation, this.Rotation, Scale, out var result);
+            BurstTransformExtensions.InverseTransformRotation(rotation, this.Rotation, out var result);
             return result;
         }
 
@@ -191,8 +161,7 @@ namespace VAT.Shared.Data
         {
             return new(
                 lerp(a.Position, b.Position, t),
-                slerp(a.Rotation, b.Rotation, t),
-                lerp(a.Scale, b.Scale, t)
+                slerp(a.Rotation, b.Rotation, t)
             );
         }
     }
