@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 #if UNITY_EDITOR
@@ -10,112 +9,34 @@ using UnityEngine;
 
 using static Unity.Mathematics.math;
 
-using VAT.Shared.Math;
-
 namespace VAT.Shared.Data
 {
     using Unity.Mathematics;
-
-    public struct EllipseCylinderMesh
-    {
-        public Ellipse bottom;
-        public SimpleTransform bottomTransform;
-        public bool isBottomFilled;
-
-        public Ellipse top;
-        public SimpleTransform topTransform;
-        public bool isTopFilled;
-
-        public int segments;
-
-        public MeshDescriptor CreateDescriptor()
-        {
-            if (segments <= 0)
-                segments = 32;
-
-            List<Vector3> verticies = new List<Vector3>();
-            List<MeshTriangle> triangles = new List<MeshTriangle>();
-
-            segments = 16;
-
-            foreach (var point in bottom.GetLocalPoints(segments))
-            {
-                verticies.Add(mul(bottomTransform.Rotation, point) + bottomTransform.Position);
-            }
-
-            int offset = verticies.Count;
-
-            foreach (var point in top.GetLocalPoints(segments))
-            {
-                verticies.Add(mul(topTransform.Rotation, point) + topTransform.Position);
-            }
-
-            int triangleIndex = 1;
-
-            for (var i = 0; i < offset; i++)
-            {
-                if (i > 0)
-                {
-                    triangles.Add(new MeshTriangle(triangleIndex - 1, triangleIndex, triangleIndex + offset));
-                    triangles.Add(new MeshTriangle(triangleIndex - 1 + offset, triangleIndex - 1, triangleIndex + offset));
-                    triangleIndex += 1;
-                }
-            }
-
-            if (isBottomFilled)
-            {
-                verticies.Add(bottomTransform.Position);
-
-                int holeIndex = 1;
-
-                for (var i = 0; i < offset - 1; i++)
-                {
-                    triangles.Add(new MeshTriangle(holeIndex - 1, verticies.Count - 1, holeIndex));
-                    holeIndex += 1;
-                }
-            }
-
-            if (isTopFilled)
-            {
-                verticies.Add(topTransform.Position);
-
-                int holeIndex = 1;
-
-                for (var i = 0; i < offset - 1; i++)
-                {
-                    triangles.Add(new MeshTriangle(verticies.Count - 1, holeIndex + offset - 1, holeIndex + offset));
-                    holeIndex += 1;
-                }
-            }
-
-            return new MeshDescriptor(verticies, triangles);
-        }
-    }
 
     [Serializable]
     public struct Ellipse : IEllipse
     {
         public const int DefaultSegments = 32;
 
-        public float2 radius;
+        public float2 Radius;
 
         public IEllipse AsInterface() => this;
 
         public void SetRadius(float2 radius)
         {
-            this.radius = radius;
+            this.Radius = radius;
         }
 
         public float2 GetRadius()
         {
-            return radius;
+            return Radius;
         }
 
         public Ellipse Scaled(float scale)
         {
             return new Ellipse()
             {
-                radius = radius * scale
+                Radius = Radius * scale
             };
         }
 
@@ -123,14 +44,14 @@ namespace VAT.Shared.Data
         {
             return new Ellipse()
             {
-                radius = radius * scale
+                Radius = Radius * scale
             };
         }
 
         public bool IsInside(SimpleTransform transform, float3 point)
         {
             var local = abs(transform.InverseTransformPoint(point));
-            var plane = local.xz < radius;
+            var plane = local.xz < Radius;
             return plane.x && plane.y;
         }
 
@@ -139,7 +60,7 @@ namespace VAT.Shared.Data
             if (IsInside(transform, point))
             {
                 var local = transform.InverseTransformPoint(point);
-                var scaled = normalize(local.xz) * radius;
+                var scaled = normalize(local.xz) * Radius;
                 var final = new float3(scaled.x, local.y, scaled.y);
 
                 return transform.TransformDirection(final - local);
@@ -156,7 +77,7 @@ namespace VAT.Shared.Data
 
             for (int i = 0; i < segments + 1; i++)
             {
-                points[i] = new float3(sin(Mathf.Deg2Rad * angle) * radius.x, 0f, cos(Mathf.Deg2Rad * angle) * radius.y);
+                points[i] = new float3(sin(Mathf.Deg2Rad * angle) * Radius.x, 0f, cos(Mathf.Deg2Rad * angle) * Radius.y);
                 angle += 360f / segments;
             }
 
@@ -166,12 +87,12 @@ namespace VAT.Shared.Data
 #if UNITY_EDITOR
         public void Draw(float3 position, quaternion rotation)
         {
-            DrawEllipse(radius, position, rotation);
+            DrawEllipse(Radius, position, rotation);
         }
 
         public static void DrawEllipse(float2 radius, float3 position, quaternion rotation)
         {
-            var ellipse = new Ellipse() { radius = radius };
+            var ellipse = new Ellipse() { Radius = radius };
             var points = ellipse.GetLocalPoints();
 
             for (var i = 0; i < points.Length; i++)
@@ -190,7 +111,7 @@ namespace VAT.Shared.Data
             var color = Handles.color;
             Handles.color = Color.cyan;
 
-            radius = this.radius;
+            radius = this.Radius;
 
             quaternion worldToLocal = inverse(rotation);
             float3 localPosition = mul(worldToLocal, position);

@@ -6,6 +6,7 @@ using UnityEngine;
 namespace VAT.Shared.Data
 {
     using System;
+
     using Unity.Mathematics;
 
     public static class EllipseExtensions
