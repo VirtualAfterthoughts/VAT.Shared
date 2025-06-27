@@ -59,14 +59,16 @@ namespace VAT.Shared.Data
         {
             if (IsInside(transform, point))
             {
-                var local = transform.InverseTransformPoint(point);
+                var local = (float3)transform.InverseTransformPoint(point);
                 var scaled = normalize(local.xz) * Radius;
                 var final = new float3(scaled.x, local.y, scaled.y);
 
                 return transform.TransformDirection(final - local);
             }
             else
+            {
                 return float3.zero;
+            }
         }
 
         public float3[] GetLocalPoints(int segments = DefaultSegments)

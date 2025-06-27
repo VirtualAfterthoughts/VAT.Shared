@@ -59,7 +59,7 @@ namespace VAT.Shared.Data
         {
             if (IsInside(transform, point))
             {
-                var local = transform.InverseTransformPoint(point);
+                var local = (float3)transform.InverseTransformPoint(point);
                 var final = normalize(local) * new float3(radius.x, height * 0.5f, radius.y);
                 return transform.TransformDirection(final - local);
             }

@@ -6,6 +6,8 @@ using static Unity.Mathematics.math;
 
 namespace VAT.Shared.Data
 {
+    using Unity.Mathematics;
+
     public struct EllipseCylinderMesh
     {
         public EllipseMesh Bottom;
@@ -26,14 +28,14 @@ namespace VAT.Shared.Data
 
             foreach (var point in Bottom.Ellipse.GetLocalPoints(Segments))
             {
-                verticies.Add(mul(Bottom.Transform.Rotation, point) + Bottom.Transform.Position);
+                verticies.Add(mul(Bottom.Transform.Rotation, point) + (float3)Bottom.Transform.Position);
             }
 
             int offset = verticies.Count;
 
             foreach (var point in Top.Ellipse.GetLocalPoints(Segments))
             {
-                verticies.Add(mul(Top.Transform.Rotation, point) + Top.Transform.Position);
+                verticies.Add(mul(Top.Transform.Rotation, point) + (float3)Top.Transform.Position);
             }
 
             int triangleIndex = 1;

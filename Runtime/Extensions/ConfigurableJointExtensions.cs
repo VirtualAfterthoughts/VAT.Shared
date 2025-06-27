@@ -41,26 +41,28 @@ namespace VAT.Shared.Extensions
             transform.rotation = original;
         }
 
-        public static quaternion GetJointRotation(this ConfigurableJoint joint)
+        public static Quaternion GetJointRotation(this ConfigurableJoint joint)
         {
-            quaternion initialRotation = joint.configuredInWorldSpace ? quaternion.identity : joint.transform.rotation;
-            BurstConfigurableJointExtensions.GetJointRotation(initialRotation, joint.axis, joint.secondaryAxis, out var result);
-            return result;
+            Quaternion initialRotation = joint.configuredInWorldSpace ? Quaternion.identity : joint.transform.rotation;
+
+            return JointMath.GetJointRotation(initialRotation, joint.axis, joint.secondaryAxis);
         }
 
         public static void SetTargetPositionAndVelocity(this ConfigurableJoint joint, Vector3 targetPosition)
         {
             // Getting the difference between the last target and the current is an easy way to set velocity without doing another conversion.
-            BurstDerivatives.GetLinearVelocity(joint.targetPosition, targetPosition, Time.deltaTime, out var result);
-            joint.targetVelocity = result;
+            var targetVelocity = Derivatives.GetLinearVelocity(joint.targetPosition, targetPosition, Time.deltaTime);
+
+            joint.targetVelocity = targetVelocity;
             joint.targetPosition = targetPosition;
         }
 
         public static void SetTargetRotationAndVelocity(this ConfigurableJoint joint, Quaternion targetRotation)
         {
             // Getting the difference between the last target and the current is an easy way to set angular velocity without doing another conversion.
-            BurstDerivatives.GetAngularVelocity(joint.targetRotation, targetRotation, Time.deltaTime, out var result);
-            joint.targetAngularVelocity = result;
+            var targetAngularVelocity = Derivatives.GetAngularVelocity(joint.targetRotation, targetRotation, Time.deltaTime);
+
+            joint.targetAngularVelocity = targetAngularVelocity;
             joint.targetRotation = targetRotation;
         }
 
@@ -82,23 +84,6 @@ namespace VAT.Shared.Extensions
     [BurstCompile]
     public static partial class BurstConfigurableJointExtensions
     {
-        [BurstCompile]
-        public static void GetJointRotation(in quaternion initialRotation, in float3 axis, in float3 secondaryAxis, out quaternion jointRotation)
-        {
-            // Calculate each axis of the joint space
-            float3 right = axis.ForceNormalize(math.right());
-            float3 nSecondaryAxis = secondaryAxis.ForceNormalize(math.up());
-            float3 forward = cross(right, nSecondaryAxis).ForceNormalize(math.forward());
-            float3 up = -cross(right, forward).ForceNormalize(math.up());
-
-            // float3x3s have a "ZXY" order
-            var matrix = orthonormalize(new float3x3(forward, right, up));
-
-            // Create the look rotation and modify it by starting rotation
-            quaternion rotation = quaternion.LookRotation(matrix.c0, matrix.c2);
-            jointRotation = mul(initialRotation, rotation);
-        }
-
         [BurstCompile]
         public static void GetTargetRotationWorld(in quaternion jointRotation, in quaternion initialRotation, in quaternion targetRotation, in quaternion initialConnectedRotation, in quaternion connectedRotation, out quaternion result)
         {

@@ -18,13 +18,18 @@
     "versionDefines": [
         {
             "name": "com.unity.addressables",
-            "expression": "1.19.19",
+            "expression": "1",
             "define": "USE_ADDRESSABLES"
         },
         {
             "name": "com.cysharp.unitask",
-            "expression": "2.3.3",
+            "expression": "1",
             "define": "USE_UNITASK"
+        },
+        {
+            "name": "com.unity.burst",
+            "expression": "1",
+            "define": "USE_BURST"
         }
     ],
     "noEngineReferences": false

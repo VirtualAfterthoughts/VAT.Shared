@@ -1,8 +1,4 @@
-using Unity.Mathematics;
-
 using UnityEngine;
-
-using static Unity.Mathematics.math;
 
 using VAT.Shared.Extensions;
 using VAT.Shared.Math;
@@ -52,7 +48,12 @@ namespace VAT.Shared.Data
         /// <summary>
         /// The default rotation of the joint space.
         /// </summary>
-        public quaternion JointRotation { get; }
+        public Quaternion JointRotation { get; }
+
+        /// <summary>
+        /// The inverse of the joint rotation.
+        /// </summary>
+        public Quaternion InverseJointRotation { get; }
 
         /// <summary>
         /// The initial transform of the joint.
@@ -77,6 +78,7 @@ namespace VAT.Shared.Data
 
             // Get the joint space rotation
             JointRotation = joint.GetJointRotation();
+            InverseJointRotation = Quaternion.Inverse(JointRotation);
 
             // Cache all involved transforms
             InitialJoint = new(Transform.position, Transform.rotation);
@@ -103,37 +105,37 @@ namespace VAT.Shared.Data
         /// Sets the target position of the joint in world space.
         /// </summary>
         /// <param name="target"></param>
-        public void SetTargetPositionWorld(float3 target) => Joint.targetPosition = GetTargetPositionWorld(target);
+        public void SetTargetPositionWorld(Vector3 target) => Joint.targetPosition = GetTargetPositionWorld(target);
 
         /// <summary>
         /// Sets the target position of the joint in local space.
         /// </summary>
         /// <param name="target"></param>
-        public void SetTargetPositionLocal(float3 target) => Joint.targetPosition = GetTargetPositionLocal(target);
+        public void SetTargetPositionLocal(Vector3 target) => Joint.targetPosition = GetTargetPositionLocal(target);
 
         /// <summary>
         /// Converts the world space target position to joint space.
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        public float3 GetTargetPositionWorld(float3 target)
+        public Vector3 GetTargetPositionWorld(Vector3 target)
         {
-            quaternion worldRotation = inverse(JointRotation);
+            Quaternion worldRotation = InverseJointRotation;
 
             if (!SwapBodies)
             {
-                worldRotation = mul(worldRotation, mul(InitialJoint.Rotation, inverse(Transform.rotation)));
+                worldRotation *= InitialJoint.Rotation * Quaternion.Inverse(Transform.rotation);
             }
             else if (ConnectedBody)
             {
-                worldRotation = mul(worldRotation, mul(InitialConnected.Rotation, inverse(ConnectedTransform.rotation)));
+                worldRotation *= InitialConnected.Rotation * Quaternion.Inverse(ConnectedTransform.rotation);
             }
 
-            float3 resultPosition = InitialJoint.Position - target;
-            resultPosition -= InitialJoint.Position - (float3)Joint.GetWorldConnectedAnchor();
-            resultPosition -= mul(Transform.rotation, (float3)Joint.anchor * (float3)Transform.lossyScale);
+            Vector3 resultPosition = InitialJoint.Position - target;
+            resultPosition -= InitialJoint.Position - Joint.GetWorldConnectedAnchor();
+            resultPosition -= Transform.rotation * Vector3.Scale(Joint.anchor, Transform.lossyScale);
 
-            resultPosition = mul(worldRotation, resultPosition);
+            resultPosition = worldRotation * resultPosition;
 
             if (SwapBodies)
             {
@@ -148,7 +150,7 @@ namespace VAT.Shared.Data
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        public float3 GetTargetPositionLocal(float3 target)
+        public Vector3 GetTargetPositionLocal(Vector3 target)
         {
             if (HasConnectedBody) 
             { 
@@ -162,35 +164,35 @@ namespace VAT.Shared.Data
         /// Sets the target rotation of the joint in world space.
         /// </summary>
         /// <param name="target"></param>
-        public void SetTargetRotationWorld(quaternion target) => Joint.targetRotation = GetTargetRotationWorld(target);
+        public void SetTargetRotationWorld(Quaternion target) => Joint.targetRotation = GetTargetRotationWorld(target);
 
         /// <summary>
         /// Sets the target rotation of the joint in local space.
         /// </summary>
         /// <param name="target"></param>
-        public void SetTargetRotationLocal(quaternion target) => Joint.targetRotation = GetTargetRotationLocal(target);
+        public void SetTargetRotationLocal(Quaternion target) => Joint.targetRotation = GetTargetRotationLocal(target);
 
         /// <summary>
         /// Converts the world space target rotation to joint space.
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        public quaternion GetTargetRotationWorld(quaternion target)
+        public Quaternion GetTargetRotationWorld(Quaternion target)
         {
-            quaternion result;
+            Quaternion result;
 
             if (HasConnectedBody)
             {
-                BurstConfigurableJointExtensions.GetTargetRotationWorld(JointRotation, InitialJoint.Rotation, target, InitialConnected.Rotation, ConnectedTransform.rotation, out result);
+                result = JointMath.GetTargetRotationWorld(JointRotation, InitialJoint.Rotation, target, InitialConnected.Rotation, ConnectedTransform.rotation);
             }
             else
             {
-                BurstConfigurableJointExtensions.GetTargetRotationWorld(JointRotation, InitialJoint.Rotation, target, out result);
+                result = JointMath.GetTargetRotationWorld(JointRotation, InitialJoint.Rotation, target);
             }
 
             if (SwapBodies)
             {
-                result = inverse(result);
+                result = Quaternion.Inverse(result);
             }
 
             return result;
@@ -201,7 +203,7 @@ namespace VAT.Shared.Data
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        public quaternion GetTargetRotationLocal(quaternion target)
+        public Quaternion GetTargetRotationLocal(Quaternion target)
         {
             if (ConnectedBody) 
             { 
@@ -215,18 +217,18 @@ namespace VAT.Shared.Data
         /// Sets the target velocity of the joint in world space.
         /// </summary>
         /// <param name="target"></param>
-        public void SetTargetVelocityWorld(float3 target) => Joint.targetVelocity = GetTargetVelocityWorld(target);
+        public void SetTargetVelocityWorld(Vector3 target) => Joint.targetVelocity = GetTargetVelocityWorld(target);
 
         /// <summary>
         /// Converts the world target velocity to joint space.
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        public float3 GetTargetVelocityWorld(float3 target)
+        public Vector3 GetTargetVelocityWorld(Vector3 target)
         {
             if (ConnectedBody)
             {
-                target -= (float3)ConnectedBody.velocity;
+                target -= ConnectedBody.velocity;
             }
 
             Vector3 from = Transform.position;
@@ -239,18 +241,18 @@ namespace VAT.Shared.Data
         /// Sets the target angular velocity of the joint in world space.
         /// </summary>
         /// <param name="target"></param>
-        public void SetTargetAngularVelocityWorld(float3 target) => Joint.targetAngularVelocity = GetTargetAngularVelocityWorld(target);
+        public void SetTargetAngularVelocityWorld(Vector3 target) => Joint.targetAngularVelocity = GetTargetAngularVelocityWorld(target);
 
         /// <summary>
         /// Converts the world target angular velocity to joint space.
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        public float3 GetTargetAngularVelocityWorld(float3 target)
+        public Vector3 GetTargetAngularVelocityWorld(Vector3 target)
         {
             if (ConnectedBody)
             {
-                target -= (float3)ConnectedBody.angularVelocity;
+                target -= ConnectedBody.angularVelocity;
             }
 
             Quaternion from = Transform.rotation;
