@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 
+using VAT.Shared.Math;
+using VAT.Shared.Utilities;
+
 namespace VAT.Shared.Extensions
 {
-    using VAT.Shared.Math;
-
     public static class ConfigurableJointExtensions
     {
         public static Vector3 GetLimitedPosition(this ConfigurableJoint joint, Vector3 position)
@@ -21,9 +22,11 @@ namespace VAT.Shared.Extensions
 
         public static void RefreshJointSpace(this ConfigurableJoint joint)
         {
-            // Flipping swapBodies causes a change in the joint. Useful since unity doesn't provide this to us.
-            joint.swapBodies = !joint.swapBodies;
-            joint.swapBodies = !joint.swapBodies;
+            // Changing the connectedBody forces the joint to be recalculated
+            var connectedBody = joint.connectedBody;
+
+            joint.connectedBody = StaticRigidbodyReference.Instance;
+            joint.connectedBody = connectedBody;
         }
 
         public static void RotateJointSpace(this ConfigurableJoint joint, Transform transform, Quaternion rotation)
