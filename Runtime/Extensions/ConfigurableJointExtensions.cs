@@ -1,13 +1,7 @@
 ﻿using UnityEngine;
 
-using Unity.Burst;
-
-using static Unity.Mathematics.math;
-
 namespace VAT.Shared.Extensions
 {
-    using Unity.Mathematics;
-
     using VAT.Shared.Math;
 
     public static class ConfigurableJointExtensions
@@ -32,7 +26,7 @@ namespace VAT.Shared.Extensions
             joint.swapBodies = !joint.swapBodies;
         }
 
-        public static void UpdateRotation(this ConfigurableJoint joint, Transform transform, quaternion rotation)
+        public static void RotateJointSpace(this ConfigurableJoint joint, Transform transform, Quaternion rotation)
         {
             Quaternion original = transform.rotation;
 
@@ -78,27 +72,6 @@ namespace VAT.Shared.Extensions
         {
             joint.xMotion = joint.yMotion = joint.zMotion = linearMotion;
             joint.angularXMotion = joint.angularYMotion = joint.angularZMotion = angularMotion;
-        }
-    }
-
-    [BurstCompile]
-    public static partial class BurstConfigurableJointExtensions
-    {
-        [BurstCompile]
-        public static void GetTargetRotationWorld(in quaternion jointRotation, in quaternion initialRotation, in quaternion targetRotation, in quaternion initialConnectedRotation, in quaternion connectedRotation, out quaternion result)
-        {
-            result = inverse(jointRotation);
-            result = mul(result, mul(initialRotation, inverse(targetRotation)));
-            result = mul(result, inverse(mul(initialConnectedRotation, inverse(connectedRotation))));
-            result = mul(result, jointRotation);
-        }
-
-        [BurstCompile]
-        public static void GetTargetRotationWorld(in quaternion jointRotation, in quaternion initialRotation, in quaternion targetRotation, out quaternion result)
-        {
-            result = inverse(jointRotation);
-            result = mul(result, mul(initialRotation, inverse(targetRotation)));
-            result = mul(result, jointRotation);
         }
     }
 }

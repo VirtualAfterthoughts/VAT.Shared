@@ -8,7 +8,7 @@ namespace VAT.Shared.Math
     {
         public static void GetSphereIntersect(in Vector3 center, in float radius, in Vector3 point, out Vector3 intersect, out Vector3 normal)
         {
-            var direction = (center - point).ForceNormalize(Vector3.forward);
+            var direction = center - point;
 
             normal = -direction;
             intersect = center - direction * radius;

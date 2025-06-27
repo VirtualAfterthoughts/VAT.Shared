@@ -3,8 +3,6 @@ using static Unity.Mathematics.math;
 
 using Unity.Burst;
 
-using VAT.Shared.Extensions;
-
 namespace VAT.Shared.Math
 {
     using Unity.Mathematics;
@@ -30,7 +28,7 @@ namespace VAT.Shared.Math
             quaternion q = normalize(mul(to, inverse(from))).Shortest();
 
             // Now we just have to convert the rotation to an angle and axis
-            BurstQuaternionExtensions.ToAxisAngle(q, out float3 x, out float xMag);
+            BurstQuaternionMath.ToAxisAngle(q, out float3 x, out float xMag);
             angularDisplacement = normalize(x);
             angularDisplacement *= xMag;
         }

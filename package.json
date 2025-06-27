@@ -4,14 +4,12 @@
     "displayName": "VAT Shared",
     "description": "Provides useful helper extensions, scripts, and data structures for unity.",
 	"unity": "2021.3",
-	"dependencies": {
-		"com.unity.burst": "1.6.6"
-    },
+	"dependencies": {},
 	"keywords": [
 		"vat",
 		"virtualafterthoughts"
 	],
-	"license": "MIT",
+	"license": "Apache-2.0",
 	"author": {
 		"name": "VirtualAfterThoughts"
 	},

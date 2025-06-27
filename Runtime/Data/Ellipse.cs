@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -7,27 +6,23 @@ using UnityEditor;
 
 using UnityEngine;
 
-using static Unity.Mathematics.math;
-
 namespace VAT.Shared.Data
 {
-    using Unity.Mathematics;
-
     [Serializable]
     public struct Ellipse : IEllipse
     {
         public const int DefaultSegments = 32;
 
-        public float2 Radius;
+        public Vector2 Radius;
 
-        public IEllipse AsInterface() => this;
+        public readonly IEllipse AsInterface() => this;
 
-        public void SetRadius(float2 radius)
+        public void SetRadius(Vector2 radius)
         {
             this.Radius = radius;
         }
 
-        public float2 GetRadius()
+        public readonly Vector2 GetRadius()
         {
             return Radius;
         }
@@ -40,7 +35,7 @@ namespace VAT.Shared.Data
             };
         }
 
-        public Ellipse Scaled(float2 scale)
+        public Ellipse Scaled(Vector2 scale)
         {
             return new Ellipse()
             {
@@ -48,38 +43,36 @@ namespace VAT.Shared.Data
             };
         }
 
-        public bool IsInside(SimpleTransform transform, float3 point)
+        public readonly bool IsInside(SimpleTransform transform, Vector3 point)
         {
-            var local = abs(transform.InverseTransformPoint(point));
-            var plane = local.xz < Radius;
-            return plane.x && plane.y;
+            var local = transform.InverseTransformPoint(point);
+            
+            return Mathf.Abs(local.x) < Radius.x && Mathf.Abs(local.z) < Radius.y;
         }
 
-        public float3 GetDepenetration(SimpleTransform transform, float3 point)
+        public readonly Vector3 GetDepenetration(SimpleTransform transform, Vector3 point)
         {
             if (IsInside(transform, point))
             {
-                var local = (float3)transform.InverseTransformPoint(point);
-                var scaled = normalize(local.xz) * Radius;
-                var final = new float3(scaled.x, local.y, scaled.y);
+                var local = transform.InverseTransformPoint(point);
+                var scaled = Vector2.Scale(new Vector2(local.x, local.z), Radius);
+                var final = new Vector3(scaled.x, local.y, scaled.y);
 
                 return transform.TransformDirection(final - local);
             }
-            else
-            {
-                return float3.zero;
-            }
+
+            return Vector3.zero;
         }
 
-        public float3[] GetLocalPoints(int segments = DefaultSegments)
+        public Vector3[] GetLocalPoints(int segments = DefaultSegments)
         {
-            float3[] points = new float3[segments + 1];
+            Vector3[] points = new Vector3[segments + 1];
 
             float angle = 0f;
 
             for (int i = 0; i < segments + 1; i++)
             {
-                points[i] = new float3(sin(Mathf.Deg2Rad * angle) * Radius.x, 0f, cos(Mathf.Deg2Rad * angle) * Radius.y);
+                points[i] = new Vector3(Mathf.Sin(Mathf.Deg2Rad * angle) * Radius.x, 0f, Mathf.Cos(Mathf.Deg2Rad * angle) * Radius.y);
                 angle += 360f / segments;
             }
 
@@ -87,12 +80,12 @@ namespace VAT.Shared.Data
         }
 
 #if UNITY_EDITOR
-        public void Draw(float3 position, quaternion rotation)
+        public void Draw(Vector3 position, Quaternion rotation)
         {
             DrawEllipse(Radius, position, rotation);
         }
 
-        public static void DrawEllipse(float2 radius, float3 position, quaternion rotation)
+        public static void DrawEllipse(Vector2 radius, Vector3 position, Quaternion rotation)
         {
             var ellipse = new Ellipse() { Radius = radius };
             var points = ellipse.GetLocalPoints();
@@ -101,12 +94,12 @@ namespace VAT.Shared.Data
             {
                 if (i > 0)
                 {
-                    Gizmos.DrawLine(mul(rotation, points[i - 1]) + position, mul(rotation, points[i]) + position);
+                    Gizmos.DrawLine((rotation * points[i - 1]) + position, (rotation * points[i]) + position);
                 }
             }
         }
 
-        public bool DrawHandles(float3 position, Quaternion rotation, float2 handleDirections, out float2 radius)
+        public bool DrawHandles(Vector3 position, Quaternion rotation, Vector2 handleDirections, out Vector2 radius)
         {
             bool modified = false;
 
@@ -115,40 +108,40 @@ namespace VAT.Shared.Data
 
             radius = this.Radius;
 
-            quaternion worldToLocal = inverse(rotation);
-            float3 localPosition = mul(worldToLocal, position);
+            Quaternion worldToLocal = Quaternion.Inverse(rotation);
+            Vector3 localPosition = worldToLocal * position;
 
-            float3 fwd = mul(rotation, new float3(0f, 0f, 1f));
-            float3 right = mul(rotation, new float3(1f, 0f, 0f));
+            Vector3 fwd = rotation * Vector3.forward;
+            Vector3 right = rotation * Vector3.right;
 
-            float3 edgeX = position + Mathf.Sign(handleDirections.x) * right * radius.x;
-            float3 initialEdgeX = mul(worldToLocal, edgeX);
+            Vector3 edgeX = position + Mathf.Sign(handleDirections.x) * right * radius.x;
+            Vector3 initialEdgeX = worldToLocal * edgeX;
 
             EditorGUI.BeginChangeCheck();
-            edgeX = Handles.FreeMoveHandle(edgeX, 0.01f, float3.zero, Handles.SphereHandleCap);
+            edgeX = Handles.FreeMoveHandle(edgeX, 0.01f, Vector3.zero, Handles.SphereHandleCap);
 
             if (EditorGUI.EndChangeCheck())
             {
-                float3 localEdgeX = mul(worldToLocal, edgeX);
+                Vector3 localEdgeX = worldToLocal * edgeX;
 
                 radius.x += (localEdgeX.x - initialEdgeX.x) * Mathf.Sign(handleDirections.x);
-                radius.x = max(0f, radius.x);
+                radius.x = Mathf.Max(0f, radius.x);
 
                 modified = true;
             }
 
-            float3 edgeY = position + Mathf.Sign(handleDirections.y) * fwd * radius.y;
-            float3 initialEdgeY = mul(worldToLocal, edgeY);
+            Vector3 edgeY = position + Mathf.Sign(handleDirections.y) * fwd * radius.y;
+            Vector3 initialEdgeY = worldToLocal * edgeY;
 
             EditorGUI.BeginChangeCheck();
-            edgeY = Handles.FreeMoveHandle(edgeY, 0.01f, float3.zero, Handles.SphereHandleCap);
+            edgeY = Handles.FreeMoveHandle(edgeY, 0.01f, Vector3.zero, Handles.SphereHandleCap);
 
             if (EditorGUI.EndChangeCheck())
             {
-                float3 localEdgeY = mul(worldToLocal, edgeY);
+                Vector3 localEdgeY = worldToLocal * edgeY;
 
                 radius.y += (localEdgeY.z - initialEdgeY.z) * Mathf.Sign(handleDirections.y);
-                radius.y = max(0f, radius.y);
+                radius.y = Mathf.Max(0f, radius.y);
 
                 modified = true;
             }

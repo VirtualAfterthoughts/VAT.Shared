@@ -1,13 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-
 using UnityEngine;
 
 namespace VAT.Shared.Data
 {
     using System;
-
-    using Unity.Mathematics;
 
     public static class EllipseExtensions
     {
@@ -36,13 +31,13 @@ namespace VAT.Shared.Data
         /// Sets the radius of the ellipse.
         /// </summary>
         /// <param name="radius">The new radius.</param>
-        public void SetRadius(float2 radius);
+        public void SetRadius(Vector2 radius);
 
         /// <summary>
         /// Gets the radius of the ellipse.
         /// </summary>
         /// <returns>The radius.</returns>
-        public float2 GetRadius();
+        public Vector2 GetRadius();
 
         /// <summary>
         /// Gets the area of the ellipse.
@@ -60,7 +55,7 @@ namespace VAT.Shared.Data
         /// <param name="transform">The transform of the ellipse.</param>
         /// <param name="point">The point to check.</param>
         /// <returns>Whether it is inside or not.</returns>
-        public bool IsInside(SimpleTransform transform, float3 point);
+        public bool IsInside(SimpleTransform transform, Vector3 point);
 
         /// <summary>
         /// Gets the depenetration value required to get a point outside of the ellipse.
@@ -68,7 +63,7 @@ namespace VAT.Shared.Data
         /// <param name="transform">The transform of the ellipse.</param>
         /// <param name="point">The point to depenetrate.</param>
         /// <returns>The depenetration vector.</returns>
-        public float3 GetDepenetration(SimpleTransform transform, float3 point);
+        public Vector3 GetDepenetration(SimpleTransform transform, Vector3 point);
 
         /// <summary>
         /// Gets the circumference of the ellipse.

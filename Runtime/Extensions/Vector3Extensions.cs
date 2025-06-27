@@ -1,31 +1,9 @@
-﻿using Unity.Mathematics;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace VAT.Shared.Extensions
 {
     public static class Vector3Extensions
     {
-        public static Vector3 ForceNormalize(this Vector3 vector, Vector3 backup)
-        {
-            if (vector == Vector3.zero)
-            {
-                return backup;
-            }
-
-            return vector;
-        }
-
-        public static float3 ForceNormalize(this float3 vector, float3 backup)
-        {
-            if (math.any(vector == float3.zero))
-            {
-                return backup;
-            }
-
-            return vector;
-        }
-
         public static float Max(this Vector3 vector) => Mathf.Max(vector.x, vector.y, vector.z);
 
         public static Vector3 FlattenNeck(this Vector3 forward, Vector3 up, Vector3? root = null)
