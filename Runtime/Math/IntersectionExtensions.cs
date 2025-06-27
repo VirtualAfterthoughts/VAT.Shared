@@ -1,5 +1,6 @@
 using UnityEngine;
 
+using VAT.Shared.Data;
 using VAT.Shared.Extensions;
 
 namespace VAT.Shared.Math
@@ -21,9 +22,9 @@ namespace VAT.Shared.Math
             var heightDir = axis * height;
             var maxPoint = center + heightDir;
             var minPoint = center - heightDir;
-            var lineData = new LineData(maxPoint, minPoint);
+            var line = new Line(maxPoint, minPoint);
 
-            var pointOnLine = lineData.ClosestPointOnLine(point);
+            var pointOnLine = line.ClosestPointOnLine(point);
             var direction = (pointOnLine - point).normalized;
 
             direction = Vector3.RotateTowards(direction, initialDirection, 0.79f / Mathf.Max(radius * 5f, 1f), Mathf.Infinity);

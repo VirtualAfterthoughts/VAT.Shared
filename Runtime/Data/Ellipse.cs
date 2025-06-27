@@ -9,37 +9,43 @@ using UnityEngine;
 namespace VAT.Shared.Data
 {
     [Serializable]
-    public struct Ellipse : IEllipse
+    public struct Ellipse
     {
         public const int DefaultSegments = 32;
 
         public Vector2 Radius;
 
-        public readonly IEllipse AsInterface() => this;
-
-        public void SetRadius(Vector2 radius)
+        public Ellipse(Vector2 radius)
         {
-            this.Radius = radius;
+            Radius = radius;
         }
 
-        public readonly Vector2 GetRadius()
+        public Ellipse(float a, float b)
         {
-            return Radius;
+            Radius = new Vector2(a, b);
         }
 
-        public Ellipse Scaled(float scale)
+        public static Ellipse operator *(Ellipse ellipse, float scale)
         {
             return new Ellipse()
             {
-                Radius = Radius * scale
+                Radius = ellipse.Radius * scale,
             };
         }
 
-        public Ellipse Scaled(Vector2 scale)
+        public static Ellipse operator *(Ellipse ellipse, Vector2 scale)
         {
             return new Ellipse()
             {
-                Radius = Radius * scale
+                Radius = ellipse.Radius * scale,
+            };
+        }
+
+        public static Ellipse operator *(Ellipse a, Ellipse b)
+        {
+            return new Ellipse()
+            {
+                Radius = a.Radius * b.Radius,
             };
         }
 

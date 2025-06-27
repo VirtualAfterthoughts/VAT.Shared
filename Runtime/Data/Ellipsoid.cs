@@ -9,44 +9,46 @@ using UnityEngine;
 namespace VAT.Shared.Data
 {
     [Serializable]
-    public struct Ellipsoid : IEllipse
+    public struct Ellipsoid
     {
         public const int DefaultSegments = 32;
 
-        public Vector2 Radius;
+        public Ellipse Ellipse;
+
         public float Height;
 
-        public readonly IEllipse AsInterface() => this;
+        public Ellipsoid(Ellipse ellipse, float height)
+        {
+            Ellipse = ellipse;
+            Height = height;
+        }
+
+        public Ellipsoid(Vector2 radius, float height)
+        {
+            Ellipse = new Ellipse(radius);
+            Height = height;
+        }
+
+        public Ellipsoid(float a, float b, float height)
+        {
+            Ellipse = new Ellipse(a, b);
+            Height = height;
+        }
 
         public static Ellipsoid Lerp(Ellipsoid a, Ellipsoid b, float t)
         {
             return new Ellipsoid()
             {
-                Radius = Vector2.Lerp(a.Radius, b.Radius, t),
+                Ellipse = new(Vector2.Lerp(a.Ellipse.Radius, b.Ellipse.Radius, t)),
                 Height = Mathf.Lerp(a.Height, b.Height, t)
             };
-        }
-
-        public void SetRadius(Vector2 radius)
-        {
-            this.Radius = radius;
-        }
-
-        public readonly Vector2 GetRadius()
-        {
-            return Radius;
-        }
-
-        public readonly float GetVolume()
-        {
-            return AsInterface().GetArea() * Height;
         }
 
         public readonly bool IsInside(SimpleTransform transform, Vector3 point)
         {
             var local = transform.InverseTransformPoint(point);
 
-            return Mathf.Abs(local.x) < Radius.x && Mathf.Abs(local.z) < Radius.y && Mathf.Abs(local.y) < Height * 0.5f;
+            return Mathf.Abs(local.x) < Ellipse.Radius.x && Mathf.Abs(local.z) < Ellipse.Radius.y && Mathf.Abs(local.y) < Height * 0.5f;
         }
 
         public readonly Vector3 GetDepenetration(SimpleTransform transform, Vector3 point)
@@ -54,7 +56,7 @@ namespace VAT.Shared.Data
             if (IsInside(transform, point))
             {
                 var local = transform.InverseTransformPoint(point);
-                var final = Vector3.Scale(local.normalized, new Vector3(Radius.x, Height * 0.5f, Radius.y));
+                var final = Vector3.Scale(local.normalized, new Vector3(Ellipse.Radius.x, Height * 0.5f, Ellipse.Radius.y));
                 return transform.TransformDirection(final - local);
             }
 
@@ -64,7 +66,7 @@ namespace VAT.Shared.Data
 #if UNITY_EDITOR
         public void Draw(Vector3 position, Quaternion rotation)
         {
-            DrawEllipsoid(Radius, Height, position, rotation);
+            DrawEllipsoid(Ellipse.Radius, Height, position, rotation);
         }
 
         public static void DrawEllipsoid(Vector2 radius, float height, Vector3 position, Quaternion rotation)
@@ -111,7 +113,7 @@ namespace VAT.Shared.Data
             var color = Handles.color;
             Handles.color = Color.cyan;
 
-            radius = this.Radius;
+            radius = this.Ellipse.Radius;
             height = this.Height;
 
             Quaternion worldToLocal = Quaternion.Inverse(rotation);
