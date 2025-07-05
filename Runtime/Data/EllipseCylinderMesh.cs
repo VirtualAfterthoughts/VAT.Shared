@@ -16,7 +16,7 @@ namespace VAT.Shared.Data
         {
             if (Segments <= 0)
             {
-                Segments = 32;
+                Segments = 16;
             }
 
             var verticies = new List<Vector3>();
