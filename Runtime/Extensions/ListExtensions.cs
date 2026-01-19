@@ -15,7 +15,7 @@ namespace VAT.Shared.Extensions
             return true;
         }
 
-        public static T GetOrAdd<T>(List<T> list, int index) where T : new()
+        public static T GetOrAdd<T>(this List<T> list, int index) where T : new()
         {
             if (index < list.Count)
             {
@@ -28,7 +28,7 @@ namespace VAT.Shared.Extensions
             return item;
         }
 
-        public static void RemoveExcess<T>(ref List<T> list, int maxCount)
+        public static void RemoveExcess<T>(this List<T> list, int maxCount)
         {
             for (var i = 0; i < list.Count - maxCount; i++)
             {
