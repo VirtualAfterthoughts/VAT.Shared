@@ -12,13 +12,14 @@ namespace VAT.Shared.Math
         {
             // We get the displacement between the quaternions, normalize it to ensure there are no math errors
             // Finally, we check the w component to make sure it is the shortest possible rotation
-            Quaternion q = to * Quaternion.Inverse(from).Shortest();
+            Quaternion delta = to * Quaternion.Inverse(from);
+            delta = delta.Shortest();
 
             // Now we just have to convert the rotation to an angle and axis
-            q.ToAngleAxis(out var angle, out var axis);
+            delta.ToAngleAxis(out var angle, out var axis);
             float magnitude = angle * Mathf.Deg2Rad;
 
-            return axis.normalized * magnitude;
+            return axis * magnitude;
         }
 
         public static Vector3 GetLinearVelocity(Vector3 from, Vector3 to) => GetLinearVelocity(from, to, Time.deltaTime);
