@@ -50,13 +50,28 @@ namespace VAT.Shared.Data
         /// </summary>
         public readonly SimpleTransform Inverse => new(-Position, Quaternion.Inverse(Rotation));
 
+        /// <summary>
+        /// Constructs a SimpleTransform from a position.
+        /// </summary>
+        /// <param name="position"></param>
         public SimpleTransform(Vector3 position) : this(position, Quaternion.identity) { }
 
+        /// <summary>
+        /// Constructs a SimpleTransform from a position and rotation.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="rotation"></param>
         public SimpleTransform(Vector3 position, Quaternion rotation)
         {
             Position = position;
             Rotation = rotation;
         }
+
+        /// <summary>
+        /// Constructs a SimpleTransform from a Transform's world space position and rotation.
+        /// </summary>
+        /// <param name="transform"></param>
+        public SimpleTransform(Transform transform) : this(transform.position, transform.rotation) { }
 
         /// <summary>
         /// Transforms a SimpleTransform from local space to world space.
