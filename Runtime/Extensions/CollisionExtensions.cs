@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace VAT.Shared.Extensions
 {
+    /// <summary>
+    /// Extension functions for Collisions.
+    /// </summary>
     public static class CollisionExtensions
     {
         /// <summary>

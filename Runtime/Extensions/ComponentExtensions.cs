@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace VAT.Shared.Extensions
 {
+    /// <summary>
+    /// Extension functions for Unity Components.
+    /// </summary>
     public static class ComponentExtensions
     {
         /// <summary>

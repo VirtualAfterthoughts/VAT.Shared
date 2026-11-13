@@ -1,13 +1,14 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
 using UnityEditor;
-using UnityEngine;
 
 namespace VAT.Shared.Editor
 {
+    /// <summary>
+    /// Extension functions for SerializedProperty instances.
+    /// </summary>
     public static class SerializedPropertyExtensions
     {
         // Original: https://gist.github.com/aholkner/214628a05b15f0bb169660945ac7923b
@@ -28,10 +29,11 @@ namespace VAT.Shared.Editor
             return value;
         }
 
-        struct PropertyPathComponent
+        private struct PropertyPathComponent
         {
-            public string propertyName;
-            public int elementIndex;
+            public string PropertyName;
+
+            public int ElementIndex;
         }
 
         private static readonly Regex _arrayElementRegex = new(@"\GArray\.data\[(\d+)\]", RegexOptions.Compiled);
@@ -47,19 +49,19 @@ namespace VAT.Shared.Editor
             if (arrayElementMatch.Success)
             {
                 index += arrayElementMatch.Length + 1; // Skip past next '.'
-                component.elementIndex = int.Parse(arrayElementMatch.Groups[1].Value);
+                component.ElementIndex = int.Parse(arrayElementMatch.Groups[1].Value);
                 return true;
             }
 
             int dot = propertyPath.IndexOf('.', index);
             if (dot == -1)
             {
-                component.propertyName = propertyPath.Substring(index);
+                component.PropertyName = propertyPath.Substring(index);
                 index = propertyPath.Length;
             }
             else
             {
-                component.propertyName = propertyPath.Substring(index, dot - index);
+                component.PropertyName = propertyPath.Substring(index, dot - index);
                 index = dot + 1; // Skip past next '.'
             }
 
@@ -68,13 +70,13 @@ namespace VAT.Shared.Editor
 
         private static object GetPathComponentValue(object container, PropertyPathComponent component)
         {
-            if (component.propertyName == null)
-                return ((IList)container)[component.elementIndex];
+            if (component.PropertyName == null)
+                return ((IList)container)[component.ElementIndex];
             else
-                return GetMemberValue(container, component.propertyName);
+                return GetMemberValue(container, component.PropertyName);
         }
 
-        static object GetMemberValue(object container, string name)
+        private static object GetMemberValue(object container, string name)
         {
             if (container == null)
                 return null;

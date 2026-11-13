@@ -1,21 +1,45 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace VAT.Shared.Extensions
 {
+    /// <summary>
+    /// Extension functions for randomization.
+    /// </summary>
     public static class RandomExtensions
     {
-        public static T GetRandom<T>(this T[] array)
+        /// <summary>
+        /// Gets a random element from a span.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="span"></param>
+        /// <returns></returns>
+        public static T GetRandom<T>(this ReadOnlySpan<T> span)
         {
-            if (array.Length <= 0)
+            if (span.Length <= 0)
             {
                 return default;
             }
 
-            return array[Random.Range(0, array.Length)];
+            return span[Random.Range(0, span.Length)];
         }
 
+        /// <summary>
+        /// Gets a random element from an array.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <returns></returns>
+        public static T GetRandom<T>(this T[] array) => new ReadOnlySpan<T>(array).GetRandom();
+
+        /// <summary>
+        /// Gets a random element from a list.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
         public static T GetRandom<T>(this List<T> list)
         {
             if (list.Count <= 0)

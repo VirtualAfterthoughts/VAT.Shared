@@ -2,16 +2,27 @@ using UnityEngine;
 
 namespace VAT.Shared.Extensions
 {
+    /// <summary>
+    /// Extension functions for Unity Quaternions.
+    /// </summary>
     public static class QuaternionExtensions
     {
-        public static Quaternion Shortest(this Quaternion quat)
+        /// <summary>
+        /// Returns the quaternion modified so that it is guaranteed to be the short way around.
+        /// </summary>
+        /// <param name="quaternion"></param>
+        /// <returns></returns>
+        public static Quaternion Shortest(this Quaternion quaternion)
         {
-            if (quat.w < 0f)
+            if (quaternion.w < 0f)
             {
-                return new Quaternion(-quat.x, -quat.y, -quat.z, -quat.w);
+                quaternion.x *= -1f;
+                quaternion.y *= -1f;
+                quaternion.z *= -1f;
+                quaternion.w *= -1f;
             }
 
-            return quat;
+            return quaternion;
         }
     }
 }
