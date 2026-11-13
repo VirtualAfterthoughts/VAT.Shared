@@ -2,15 +2,21 @@
 using System;
 
 using UnityEditor;
+
 using UnityEngine;
 
 namespace VAT.Shared.Utilities
 {
+    /// <summary>
+    /// A disposable GameObject preview scene. This class only exists in the editor.
+    /// </summary>
     public class TempGameObjectScene : IDisposable
     {
         private PreviewRenderUtility _previewScene = null;
 
         private GameObject _instance = null;
+
+        private bool _disposed = false;
 
         private TempGameObjectScene(GameObject asset)
         {
@@ -19,8 +25,6 @@ namespace VAT.Shared.Utilities
             _instance = GameObject.Instantiate(asset, Vector3.zero, Quaternion.identity);
             _previewScene.AddSingleGO(_instance);
         }
-
-        private bool _disposed = false;
 
         public void Dispose()
         {
@@ -38,6 +42,12 @@ namespace VAT.Shared.Utilities
             _disposed = true;
         }
 
+        /// <summary>
+        /// Instantiates a GameObject into a temporary preview scene.
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <param name="instance"></param>
+        /// <returns></returns>
         public static TempGameObjectScene Create(GameObject asset, out GameObject instance)
         {
             var scene = new TempGameObjectScene(asset);

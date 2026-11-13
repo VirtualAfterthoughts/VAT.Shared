@@ -1,5 +1,8 @@
 namespace VAT.Shared.Utilities
 {
+    /// <summary>
+    /// Known constants for physics simulations.
+    /// </summary>
     public static class PhysicsConstants
     {
         /// <summary>

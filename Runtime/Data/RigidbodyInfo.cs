@@ -5,7 +5,7 @@ using UnityEngine;
 namespace VAT.Shared.Data
 {
     /// <summary>
-    /// A serialized version of all settings of a Rigidbody.
+    /// Serialized settings of a Unity Rigidbody.
     /// </summary>
     [Serializable]
     public class RigidbodyInfo
@@ -13,7 +13,7 @@ namespace VAT.Shared.Data
         /// <summary>
         /// RigidbodyInfo with default settings.
         /// </summary>
-        public static RigidbodyInfo Identity => new()
+        public static RigidbodyInfo Default => new()
         {
             Mass = 1f,
             Drag = 0f,
@@ -72,24 +72,24 @@ namespace VAT.Shared.Data
         [SerializeField]
         private RigidbodyConstraints _constraints;
 
-        public float Mass { get { return _mass; } set { _mass = value; } }
+        public float Mass { get => _mass; set => _mass = value; }
 
-        public float Drag { get { return _drag; } set { _drag = value; } }
-        public float AngularDrag { get { return _angularDrag; } set { _angularDrag = value; } }
+        public float Drag { get => _drag; set => _drag = value; }
+        public float AngularDrag { get => _angularDrag; set => _angularDrag = value; }
 
-        public bool AutomaticCenterOfMass { get { return _automaticCenterOfMass; } set { _automaticCenterOfMass = value; } }
-        public Vector3 CenterOfMass { get { return _centerOfMass; } set { _centerOfMass = value; } }
+        public bool AutomaticCenterOfMass { get => _automaticCenterOfMass; set => _automaticCenterOfMass = value; }
+        public Vector3 CenterOfMass { get => _centerOfMass; set => _centerOfMass = value; }
 
-        public bool AutomaticInertiaTensor { get { return _automaticInertiaTensor; } set { _automaticInertiaTensor = value; } }
-        public Vector3 InertiaTensor { get { return _inertiaTensor; } set { _inertiaTensor = value; } }
-        public Quaternion InertiaTensorRotation { get { return _inertiaTensorRotation; } set { _inertiaTensorRotation = value; } }
+        public bool AutomaticInertiaTensor { get => _automaticInertiaTensor; set => _automaticInertiaTensor = value; }
+        public Vector3 InertiaTensor { get => _inertiaTensor; set => _inertiaTensor = value; }
+        public Quaternion InertiaTensorRotation { get => _inertiaTensorRotation; set => _inertiaTensorRotation = value; }
 
-        public bool UseGravity { get { return _useGravity; } set { _useGravity = value; } }
-        public bool IsKinematic { get { return _isKinematic; } set { _isKinematic = value; } }
+        public bool UseGravity { get => _useGravity; set => _useGravity = value; }
+        public bool IsKinematic { get => _isKinematic; set => _isKinematic = value; }
 
-        public RigidbodyInterpolation Interpolation { get { return _interpolation; } set { _interpolation = value; } }
-        public CollisionDetectionMode CollisionDetectionMode { get { return _collisionDetectionMode; } set { _collisionDetectionMode = value; } }
-        public RigidbodyConstraints Constraints { get { return _constraints; } set { _constraints = value; } }
+        public RigidbodyInterpolation Interpolation { get => _interpolation; set => _interpolation = value; }
+        public CollisionDetectionMode CollisionDetectionMode { get => _collisionDetectionMode; set => _collisionDetectionMode = value; }
+        public RigidbodyConstraints Constraints { get => _constraints; set => _constraints = value; }
 
         public RigidbodyInfo() { }
 
@@ -103,7 +103,7 @@ namespace VAT.Shared.Data
         }
 
         /// <summary>
-        /// Copies all of the settings from this RigidbodyInfo to the Rigidbody.
+        /// Copies all of the settings from this RigidbodyInfo to a Rigidbody.
         /// </summary>
         /// <param name="rigidbody"></param>
         public void CopyTo(Rigidbody rigidbody)
@@ -137,7 +137,7 @@ namespace VAT.Shared.Data
         }
 
         /// <summary>
-        /// Copies all of the settings from the Rigidbody onto this RigidbodyInfo.
+        /// Copies all of the settings from a Rigidbody onto this RigidbodyInfo.
         /// </summary>
         /// <param name="rigidbody"></param>
         public void CopyFrom(Rigidbody rigidbody)

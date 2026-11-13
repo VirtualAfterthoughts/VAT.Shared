@@ -2,9 +2,17 @@ using UnityEngine;
 
 namespace VAT.Shared.Utilities
 {
+    /// <summary>
+    /// A static holder for a persistent kinematic rigidbody that exists at runtime.
+    /// <para>
+    /// This can be used to refresh joints when a connected body isn't available.
+    /// </para>
+    /// </summary>
     public static class StaticRigidbodyReference
     {
-        private static Rigidbody _instance = null;
+        /// <summary>
+        /// The instance of the kinematic rigidbody. If it currently does not exist, one will be created.
+        /// </summary>
         public static Rigidbody Instance
         {
             get
@@ -26,5 +34,7 @@ namespace VAT.Shared.Utilities
                 return _instance;
             }
         }
+
+        private static Rigidbody _instance = null;
     }
 }

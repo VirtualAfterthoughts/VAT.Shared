@@ -2,16 +2,34 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+using VAT.Shared.Extensions;
+
 namespace VAT.Shared.Data
 {
-    public struct EllipseCylinderMesh
+    /// <summary>
+    /// A descriptor for a mesh with two curve bases and a specified number of segments.
+    /// </summary>
+    public struct CurveCylinderMesh
     {
-        public EllipseMesh Bottom;
+        /// <summary>
+        /// The bottom base of the curve cylinder.
+        /// </summary>
+        public CurveMesh Bottom;
 
-        public EllipseMesh Top;
+        /// <summary>
+        /// The top base of the curve cylinder.
+        /// </summary>
+        public CurveMesh Top;
 
+        /// <summary>
+        /// The number of segments that the mesh has on each base.
+        /// </summary>
         public int Segments;
 
+        /// <summary>
+        /// Creates a mesh descriptor that can then be used to create or write to a mesh.
+        /// </summary>
+        /// <returns></returns>
         public MeshDescriptor CreateDescriptor()
         {
             if (Segments <= 0)
@@ -22,14 +40,20 @@ namespace VAT.Shared.Data
             var verticies = new List<Vector3>();
             var triangles = new List<MeshTriangle>();
 
-            foreach (var point in Bottom.Ellipse.GetLocalPoints(Segments))
+            var points = new Vector3[Segments];
+
+            Bottom.Curve.GetVertices(points);
+
+            foreach (var point in points)
             {
                 verticies.Add((Bottom.Transform.Rotation * point) + Bottom.Transform.Position);
             }
 
             int offset = verticies.Count;
 
-            foreach (var point in Top.Ellipse.GetLocalPoints(Segments))
+            Top.Curve.GetVertices(points);
+
+            foreach (var point in points)
             {
                 verticies.Add((Top.Transform.Rotation * point) + Top.Transform.Position);
             }

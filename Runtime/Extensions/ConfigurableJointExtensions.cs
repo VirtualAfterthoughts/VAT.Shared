@@ -91,6 +91,11 @@ namespace VAT.Shared.Extensions
         /// <param name="rotation">The rotation that the joint's connected body will solve relative to.</param>
         public static void RotateJointConnectedBodySpace(this ConfigurableJoint joint, Quaternion rotation) => RotateJointTransformSpace(joint, joint.connectedBody.transform, rotation);
 
+        /// <summary>
+        /// Gets the joint's space conversion rotation for calculating target positions and rotations.
+        /// </summary>
+        /// <param name="joint"></param>
+        /// <returns></returns>
         public static Quaternion GetJointRotation(this ConfigurableJoint joint)
         {
             Quaternion initialRotation = joint.configuredInWorldSpace ? Quaternion.identity : joint.transform.rotation;

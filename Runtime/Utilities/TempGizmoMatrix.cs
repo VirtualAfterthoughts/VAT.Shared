@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace VAT.Shared.Utilities
 {
+    /// <summary>
+    /// A disposable Gizmos matrix holder, which automatically resets the Gizmos matrix after it is released.
+    /// </summary>
     public class TempGizmoMatrix : IDisposable
     {
         private Matrix4x4 _matrix;

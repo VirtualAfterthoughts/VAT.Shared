@@ -1,6 +1,4 @@
 #if USE_BURST
-using UnityEngine;
-
 using Unity.Burst;
 
 using static Unity.Mathematics.math;
@@ -9,20 +7,35 @@ namespace VAT.Shared.Math
 {
     using Unity.Mathematics;
 
+    /// <summary>
+    /// Functions for operating on Unity.Mathematics quaternions.
+    /// </summary>
     [BurstCompile(FloatMode = FloatMode.Fast)]
     public static class BurstQuaternionMath
     {
+        /// <summary>
+        /// Gets the axis and angle, in degrees, out of a quaternion.
+        /// </summary>
+        /// <param name="quaternion"></param>
+        /// <param name="angle"></param>
+        /// <param name="axis"></param>
         [BurstCompile(FloatMode = FloatMode.Fast)]
-        public static void ToAngleAxis(in quaternion quat, out float angle, out float3 axis)
+        public static void ToAngleAxis(in quaternion quaternion, out float angle, out float3 axis)
         {
-            ToAxisAngle(quat, out axis, out angle);
+            ToAxisAngle(quaternion, out axis, out angle);
             angle = degrees(angle);
         }
 
+        /// <summary>
+        /// Gets the axis and angle, in radians, out of a quaternion.
+        /// </summary>
+        /// <param name="quaternion"></param>
+        /// <param name="axis"></param>
+        /// <param name="angle"></param>
         [BurstCompile(FloatMode = FloatMode.Fast)]
-        public static void ToAxisAngle(in quaternion quat, out float3 axis, out float angle)
+        public static void ToAxisAngle(in quaternion quaternion, out float3 axis, out float angle)
         {
-            var rot = quat;
+            var rot = quaternion;
 
             if (abs(rot.value.w) > 1.0f)
             {
@@ -43,14 +56,19 @@ namespace VAT.Shared.Math
             }
         }
 
-        public static quaternion Shortest(this quaternion quat)
+        /// <summary>
+        /// Returns the quaternion modified so that it is guaranteed to be the short way around.
+        /// </summary>
+        /// <param name="quaternion"></param>
+        /// <returns></returns>
+        public static quaternion Shortest(this quaternion quaternion)
         {
-            if (quat.value.w < 0)
+            if (quaternion.value.w < 0)
             {
-                return new quaternion(-quat.value.x, -quat.value.y, -quat.value.z, -quat.value.w);
+                return new quaternion(-quaternion.value.x, -quaternion.value.y, -quaternion.value.z, -quaternion.value.w);
             }
 
-            return quat;
+            return quaternion;
         }
     }
 }

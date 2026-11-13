@@ -7,12 +7,30 @@ namespace VAT.Shared.Math
 {
     using Unity.Mathematics;
 
+    /// <summary>
+    /// Burst equivalents of <see cref="Derivatives"/>. These are set to compile with <see cref="FloatMode.Fast"/>.
+    /// </summary>
     [BurstCompile(FloatMode = FloatMode.Fast)]
     public static partial class BurstDerivatives
     {
+        /// <summary>
+        /// Gets the linear displacement between two points.
+        /// </summary>
+        /// <param name="from">The start point.</param>
+        /// <param name="to">The end point.</param>
+        /// <param name="linearDisplacement">The resulting linear displacement.</param>
+        /// <returns></returns>
         [BurstCompile(FloatMode = FloatMode.Fast)]
         public static void GetLinearDisplacement(in float3 from, in float3 to, out float3 linearDisplacement) => linearDisplacement = to - from;
 
+        /// <summary>
+        /// Gets the linear velocity between two points over a given delta time.
+        /// </summary>
+        /// <param name="from">The start point.</param>
+        /// <param name="to">The end point.</param>
+        /// <param name="deltaTime">The change in time that the translation occurred over.</param>
+        /// <param name="linearVelocity">The resulting linear velocity.</param>
+        /// <returns></returns>
         [BurstCompile(FloatMode = FloatMode.Fast)]
         public static void GetLinearVelocity(in float3 from, in float3 to, in float deltaTime, out float3 linearVelocity)
         {
@@ -20,6 +38,13 @@ namespace VAT.Shared.Math
             linearVelocity = linearDisplacement / deltaTime;
         }
 
+        /// <summary>
+        /// Gets the angular displacement between two rotations.
+        /// </summary>
+        /// <param name="from">The start rotation.</param>
+        /// <param name="to">The end rotation.</param>
+        /// <param name="angularDisplacement">The resulting angular displacement.</param>
+        /// <returns></returns>
         [BurstCompile(FloatMode = FloatMode.Fast)]
         public static void GetAngularDisplacement(in quaternion from, in quaternion to, out float3 angularDisplacement)
         {
@@ -33,6 +58,14 @@ namespace VAT.Shared.Math
             angularDisplacement *= xMag;
         }
 
+        /// <summary>
+        /// Gets the angular velocity between two rotations over a given delta time.
+        /// </summary>
+        /// <param name="from">The start rotation.</param>
+        /// <param name="to">The end rotation.</param>
+        /// <param name="deltaTime">The change in time that the rotation occurred over.</param>
+        /// <param name="angularVelocity">The resulting angular velocity.</param>
+        /// <returns></returns>
         [BurstCompile(FloatMode = FloatMode.Fast)]
         public static void GetAngularVelocity(in quaternion from, in quaternion to, in float deltaTime, out float3 angularVelocity)
         {
