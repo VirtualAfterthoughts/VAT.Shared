@@ -2,6 +2,8 @@ using System;
 
 using UnityEngine;
 
+using VAT.Shared.Math;
+
 namespace VAT.Shared.Data
 {
     /// <summary>
@@ -36,35 +38,9 @@ namespace VAT.Shared.Data
 
         public readonly Vector3 GetPointOnCurve(float angle)
         {
-            float normalizedAngle = ((angle % 360f) + 360f) % 360f;
+            var quadrant = AngleMath.GetQuadrantFromDegrees(angle);
 
-            float xRadius;
-            float yRadius;
-
-            // Quadrant 1 +x +y
-            if (normalizedAngle <= 90f)
-            {
-                xRadius = PositiveX;
-                yRadius = PositiveY;
-            }
-            // Quadrant 2 -x +y
-            else if (normalizedAngle <= 180f)
-            {
-                xRadius = NegativeX;
-                yRadius = PositiveY;
-            }
-            // Quadrant 3 -x -y
-            else if (normalizedAngle <= 270f)
-            {
-                xRadius = NegativeX;
-                yRadius = NegativeY;
-            }
-            // Quadrant 4 +x -y
-            else
-            {
-                xRadius = PositiveX;
-                yRadius = NegativeY;
-            }
+            var (xRadius, yRadius) = AngleMath.GetValuesFromQuadrant(quadrant, PositiveX, PositiveY, NegativeX, NegativeY);
 
             float x = Mathf.Cos(Mathf.Deg2Rad * angle) * xRadius;
             float y = Mathf.Sin(Mathf.Deg2Rad * angle) * yRadius;
