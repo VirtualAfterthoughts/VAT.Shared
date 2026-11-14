@@ -53,45 +53,12 @@ namespace VAT.Shared.Data
             return transform.TransformDirection(final - local);
         }
 
-        /// <summary>
-        /// Gets local points on the ellipse given the maximum angle and the segment count.
-        /// </summary>
-        /// <param name="angle">The maximum angle of the ellipse.</param>
-        /// <param name="segments">The number of segments.</param>
-        /// <returns></returns>
-        public readonly Vector3[] GetLocalPoints(float angle = 360f, int segments = 16)
+        public readonly Vector3 GetPointOnCurve(float angle)
         {
-            Vector3[] points = new Vector3[segments + 1];
+            float x = Mathf.Cos(Mathf.Deg2Rad * angle) * Radius.x;
+            float y = Mathf.Sin(Mathf.Deg2Rad * angle) * Radius.y;
 
-            float totalAngle = 0f;
-
-            for (int i = 0; i < segments + 1; i++)
-            {
-                points[i] = new Vector3(Mathf.Sin(Mathf.Deg2Rad * totalAngle) * Radius.x, 0f, Mathf.Cos(Mathf.Deg2Rad * totalAngle) * Radius.y);
-                totalAngle += angle / segments;
-            }
-
-            return points;
-        }
-
-        public void GetVertices(Span<Vector3> points, float angle)
-        {
-            int segmentCount = points.Length;
-
-            float segmentAngle = 0f;
-
-            if (segmentCount > 1)
-            {
-                segmentAngle = angle / (segmentCount - 1);
-            }
-
-            float totalAngle = 0f;
-
-            for (int i = 0; i < segmentCount; i++)
-            {
-                points[i] = new Vector3(Mathf.Sin(Mathf.Deg2Rad * totalAngle) * Radius.x, 0f, Mathf.Cos(Mathf.Deg2Rad * totalAngle) * Radius.y);
-                totalAngle += segmentAngle;
-            }
+            return new Vector3(x, 0f, y);
         }
 
         public static Ellipse operator *(Ellipse ellipse, float scale) => new(ellipse.Radius * scale);
