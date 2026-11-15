@@ -7,10 +7,10 @@ using VAT.Shared.Math;
 namespace VAT.Shared.Data
 {
     /// <summary>
-    /// A serializable ellipse with four dimensions that can curve inward.
+    /// A serializable ellipse with both positive and negative x and y dimensions.
     /// </summary>
     [Serializable]
-    public struct SoftEllipse : ICurve
+    public struct SignedEllipse : ICurve
     {
         [Tooltip("The radius of the ellipse in the +x direction.")]
         public float PositiveX;
@@ -24,11 +24,11 @@ namespace VAT.Shared.Data
         [Tooltip("The radius of the ellipse in the -y direction.")]
         public float NegativeY;
 
-        public SoftEllipse(float a, float b) : this(a, b, a, b) { }
+        public SignedEllipse(float a, float b) : this(a, b, a, b) { }
 
-        public SoftEllipse(Vector2 radius) : this(radius.x, radius.y, radius.x, radius.y) { }
+        public SignedEllipse(Vector2 radius) : this(radius.x, radius.y, radius.x, radius.y) { }
 
-        public SoftEllipse(float positiveX, float positiveY, float negativeX, float negativeY)
+        public SignedEllipse(float positiveX, float positiveY, float negativeX, float negativeY)
         {
             PositiveX = positiveX;
             PositiveY = positiveY;
@@ -48,7 +48,7 @@ namespace VAT.Shared.Data
             return new Vector3(x, 0f, y);
         }
 
-        public static SoftEllipse operator *(SoftEllipse ellipse, float scale) => new(ellipse.PositiveX * scale, ellipse.PositiveY * scale, ellipse.NegativeX * scale, ellipse.NegativeY * scale);
-        public static SoftEllipse operator *(SoftEllipse a, SoftEllipse b) => new(a.PositiveX * b.PositiveX, a.PositiveY * b.PositiveY, a.NegativeX * b.NegativeX, a.NegativeY * b.NegativeY);
+        public static SignedEllipse operator *(SignedEllipse ellipse, float scale) => new(ellipse.PositiveX * scale, ellipse.PositiveY * scale, ellipse.NegativeX * scale, ellipse.NegativeY * scale);
+        public static SignedEllipse operator *(SignedEllipse a, SignedEllipse b) => new(a.PositiveX * b.PositiveX, a.PositiveY * b.PositiveY, a.NegativeX * b.NegativeX, a.NegativeY * b.NegativeY);
     }
 }
